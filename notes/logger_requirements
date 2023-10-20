@@ -1,0 +1,28 @@
+Sensors:
+- rpm
+- accelerometer, speedometer 
+- egt exhaust gas temperature  (control flow rate to keep this happy)
+- coolant temp (control pump to keep in the right place)
+- air fuel ratio (grab from existing 0-5V sensor, and keep happy by turning knob)
+- compass (get direction and compare to wind speed)
+- rtc to synchronize clock
+
+off-board sensors
+- Weather sensor (John's buying) 
+	- temperature
+	- wind speed/direction
+	- barometric pressure
+
+actuators:
+- coolant pump (takes 12v, adjust to keep engine temp at x)
+- turn knob for air fuel ratio (adjust to keep afr at x)
+- push shift lever with a button
+- sd card to write to 
+- light up lights using misc data
+
+
+
+MVP: 
+- acceleration/velocity
+- egt/coolant temp
+- rtc/sd card
