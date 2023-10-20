@@ -3,3 +3,6 @@ build
 
 # ignore sdk
 pico-sdk
+
+# ignore .vscode
+.vscode
