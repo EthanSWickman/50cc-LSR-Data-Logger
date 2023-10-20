@@ -1,2 +1,5 @@
 # ignore build directory
 build
+
+# ignore sdk
+pico-sdk
