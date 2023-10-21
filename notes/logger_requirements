@@ -4,7 +4,6 @@ Sensors:
 - egt exhaust gas temperature  (control flow rate to keep this happy)
 - coolant temp (control pump to keep in the right place)
 - air fuel ratio (grab from existing 0-5V sensor, and keep happy by turning knob)
-- compass (get direction and compare to wind speed)
 - rtc to synchronize clock
 
 off-board sensors
