@@ -9,16 +9,13 @@ set(CMAKE_C_STANDARD 11)
 
 pico_sdk_init()
 
-add_executable(runloop ./runloop.c)
+add_executable(main ./main.c)
 
-target_link_libraries(runloop 
+target_link_libraries(main
 pico_stdlib
-pico_cyw43_arch_none
-hardware_pwm
-hardware_adc
 )
 
-pico_enable_stdio_usb(runloop 1)
-pico_enable_stdio_uart(runloop 0)
+pico_enable_stdio_usb(main 1)
+pico_enable_stdio_uart(main 0)
 
-pico_add_extra_outputs(runloop)
+pico_add_extra_outputs(main)
