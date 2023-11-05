@@ -1,6 +1,8 @@
 # ignore build directory
 **/build/*
 
+**/Makefile
+
 !**/build/.gittrack
 
 # ignore sdk
