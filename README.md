@@ -5,7 +5,7 @@ This repository is the home of data logger development for the 50cc Land Speed R
 ## Project Structure 
 - /source/ - code base (we use C and CMake) - loosely follows https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html plus the following
     - /source/build/ - cmake build file
-    - /source/wiring - wiring diagram file (file format tbd)
+    - /source/schematic/ - wiring schematics 
 - /examples/ - example cmake projects that exhibit important features of cmake and pico programming in C
 - /notes/ - important notes for the datalogging team to reference
 
