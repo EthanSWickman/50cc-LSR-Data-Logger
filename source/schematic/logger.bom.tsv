@@ -1,6 +1,6 @@
 Id	Description	Qty	Unit	Designators
-1	Cable, 5 x 28 AWG	0	m	Power
-2	Cable, 6 x 28 AWG	0	m	Data
+1	Cable, 12 x 28 AWG	0	m	Power
+2	Cable, 4 x 28 AWG	0	m	Data
 3	Connector, ground, female, 5 pins	1		Ground Rail
 4	Connector, headers, draws 1.5ma, 6 pins	1		MAX31855_egt
 5	Connector, headers, male, 2 pins	1		12V Source

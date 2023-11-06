@@ -553,17 +553,17 @@ graph {
  </td></tr>
 </table>
 > fillcolor="#FFFFFF" shape=box style=filled]
-	edge [color="#000000:#ffffff:#000000"]
+	edge [color="#000000:#ffffff:#ffffff:#ffffff:#000000"]
 	Pico:p2r:e -- Data:w1:w
 	Data:w1:e -- MAX31855_egt:p4l:w
-	edge [color="#000000:#ffffff:#000000"]
+	edge [color="#000000:#895956:#895956:#895956:#000000"]
 	Pico:p3r:e -- Data:w2:w
 	Data:w2:e -- MAX31855_egt:p5l:w
-	edge [color="#000000:#ffffff:#000000"]
+	edge [color="#000000:#00ff00:#00ff00:#00ff00:#000000"]
 	Pico:p5r:e -- Data:w3:w
 	Data:w3:e -- MAX31855_egt:p6l:w
-	edge [color="#000000:#ffffff:#000000"]
-	Pico:p7r:e -- Data:w4:w
+	edge [color="#000000:#ffff00:#ffff00:#ffff00:#000000"]
+	Pico:p6r:e -- Data:w4:w
 	Data:w4:e -- "Hall Effect Sensor":p3l:w
 	Data [label=<
 <table border="0" cellspacing="0" cellpadding="0">
@@ -574,7 +574,7 @@ graph {
  </td></tr>
  <tr><td>
   <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
-   <td balign="left">6x</td>
+   <td balign="left">4x</td>
    <td balign="left">28 AWG</td>
   </tr></table>
  </td></tr>
@@ -584,14 +584,16 @@ graph {
    <tr>
     <td>Pico:2:GP0</td>
     <td>
-     1
+     1:WH
     </td>
     <td>MAX31855_egt:4:DO</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w1" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w1" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
@@ -600,15 +602,17 @@ graph {
    <tr>
     <td>Pico:3:GP1</td>
     <td>
-     2
+     2:BN
     </td>
     <td>MAX31855_egt:5:CS</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w2" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w2" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#895956" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#895956" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#895956" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
     </td>
@@ -616,63 +620,35 @@ graph {
    <tr>
     <td>Pico:5:GP2</td>
     <td>
-     3
+     3:GN
     </td>
     <td>MAX31855_egt:6:CLK</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w3" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w3" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#00ff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#00ff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#00ff00" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
     </td>
    </tr>
    <tr>
-    <td>Pico:7:GP4</td>
+    <td>Pico:6:GP3</td>
     <td>
-     4
+     4:YE
     </td>
     <td>Hall Effect Sensor:3:Vout</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w4" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w4" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-     </table>
-    </td>
-   </tr>
-   <tr>
-    <td><!-- 5_in --></td>
-    <td>
-     5
-    </td>
-    <td><!-- 5_out --></td>
-   </tr>
-   <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w5" height="6">
-     <table cellspacing="0" cellborder="0" border="0">
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-     </table>
-    </td>
-   </tr>
-   <tr>
-    <td><!-- 6_in --></td>
-    <td>
-     6
-    </td>
-    <td><!-- 6_out --></td>
-   </tr>
-   <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w6" height="6">
-     <table cellspacing="0" cellborder="0" border="0">
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffff00" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
     </td>
@@ -682,42 +658,42 @@ graph {
  </td></tr>
 </table>
 > fillcolor="#FFFFFF" shape=box style=filled]
-	edge [color="#000000:#ffffff:#000000"]
-	"12V Source":p1r:e -- Power:w3:w
-	Power:w3:e -- "12V Rail":p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"12V Source":p2r:e -- Power:w4:w
-	Power:w4:e -- "Ground Rail":p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"12V Rail":p2r:e -- Power:w5:w
-	Power:w5:e -- "12V to 5V Converter":p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"12V to 5V Converter":p1r:e -- Power:w2:w
-	Power:w2:e -- "5V Rail":p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"Ground Rail":p2r:e -- Power:w2:w
-	Power:w2:e -- "12V to 5V Converter":p2l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"5V Rail":p2r:e -- Power:w1:w
-	Power:w1:e -- Pico:p40l:w
-	edge [color="#000000:#ffffff:#000000"]
-	Pico:p37r:e -- Power:w1:w
-	Power:w1:e -- "3V Rail":p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"Ground Rail":p3r:e -- Power:w1:w
-	Power:w1:e -- Pico:p39l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"3V Rail":p2r:e -- Power:w1:w
-	Power:w1:e -- MAX31855_egt:p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"Ground Rail":p4r:e -- Power:w1:w
-	Power:w1:e -- MAX31855_egt:p3l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"3V Rail":p2r:e -- Power:w1:w
-	Power:w1:e -- "Hall Effect Sensor":p1l:w
-	edge [color="#000000:#ffffff:#000000"]
-	"Ground Rail":p5r:e -- Power:w1:w
-	Power:w1:e -- "Hall Effect Sensor":p2l:w
+	edge [color="#000000:#ffffff:#ffffff:#ffffff:#000000"]
+	"12V Source":p1r:e -- Power:w1:w
+	Power:w1:e -- "12V Rail":p1l:w
+	edge [color="#000000:#895956:#895956:#895956:#000000"]
+	"12V Source":p2r:e -- Power:w2:w
+	Power:w2:e -- "Ground Rail":p1l:w
+	edge [color="#000000:#00ff00:#00ff00:#00ff00:#000000"]
+	"12V Rail":p2r:e -- Power:w3:w
+	Power:w3:e -- "12V to 5V Converter":p1l:w
+	edge [color="#000000:#ffff00:#ffff00:#ffff00:#000000"]
+	"12V to 5V Converter":p1r:e -- Power:w4:w
+	Power:w4:e -- "5V Rail":p1l:w
+	edge [color="#000000:#999999:#999999:#999999:#000000"]
+	"Ground Rail":p2r:e -- Power:w5:w
+	Power:w5:e -- "12V to 5V Converter":p2l:w
+	edge [color="#000000:#ff66cc:#ff66cc:#ff66cc:#000000"]
+	"5V Rail":p2r:e -- Power:w6:w
+	Power:w6:e -- Pico:p40l:w
+	edge [color="#000000:#0066ff:#0066ff:#0066ff:#000000"]
+	Pico:p37r:e -- Power:w7:w
+	Power:w7:e -- "3V Rail":p1l:w
+	edge [color="#000000:#ff0000:#ff0000:#ff0000:#000000"]
+	"Ground Rail":p3r:e -- Power:w8:w
+	Power:w8:e -- Pico:p39l:w
+	edge [color="#000000:#000000:#000000:#000000:#000000"]
+	"3V Rail":p2r:e -- Power:w9:w
+	Power:w9:e -- MAX31855_egt:p1l:w
+	edge [color="#000000:#8000ff:#8000ff:#8000ff:#000000"]
+	"Ground Rail":p4r:e -- Power:w10:w
+	Power:w10:e -- MAX31855_egt:p3l:w
+	edge [color="#000000:#999999:#ff66cc:#999999:#000000"]
+	"3V Rail":p2r:e -- Power:w11:w
+	Power:w11:e -- "Hall Effect Sensor":p1l:w
+	edge [color="#000000:#ff0000:#0066ff:#ff0000:#000000"]
+	"Ground Rail":p5r:e -- Power:w12:w
+	Power:w12:e -- "Hall Effect Sensor":p2l:w
 	Power [label=<
 <table border="0" cellspacing="0" cellpadding="0">
  <tr><td>
@@ -727,7 +703,7 @@ graph {
  </td></tr>
  <tr><td>
   <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
-   <td balign="left">5x</td>
+   <td balign="left">12x</td>
    <td balign="left">28 AWG</td>
   </tr></table>
  </td></tr>
@@ -735,48 +711,18 @@ graph {
   <table border="0" cellspacing="0" cellborder="0">
    <tr><td>&nbsp;</td></tr>
    <tr>
-    <td>5V Rail:2</td>
-    <td>
-     1
-    </td>
-    <td>Pico:40:VSYS</td>
-   </tr>
-   <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w1" height="6">
-     <table cellspacing="0" cellborder="0" border="0">
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-     </table>
-    </td>
-   </tr>
-   <tr>
-    <td>12V to 5V Converter:1:Vin</td>
-    <td>
-     2
-    </td>
-    <td>5V Rail:1</td>
-   </tr>
-   <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w2" height="6">
-     <table cellspacing="0" cellborder="0" border="0">
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-     </table>
-    </td>
-   </tr>
-   <tr>
     <td>12V Source:1:12V</td>
     <td>
-     3
+     1:WH
     </td>
     <td>12V Rail:1</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w3" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w1" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
@@ -785,15 +731,17 @@ graph {
    <tr>
     <td>12V Source:2:GND</td>
     <td>
-     4
+     2:BN
     </td>
     <td>Ground Rail:1</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w4" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w2" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#895956" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#895956" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#895956" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
     </td>
@@ -801,15 +749,179 @@ graph {
    <tr>
     <td>12V Rail:2</td>
     <td>
-     5
+     3:GN
     </td>
     <td>12V to 5V Converter:1:Vin</td>
    </tr>
    <tr>
-    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w5" height="6">
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w3" height="10">
      <table cellspacing="0" cellborder="0" border="0">
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
-      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#00ff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#00ff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#00ff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>12V to 5V Converter:1:Vin</td>
+    <td>
+     4:YE
+    </td>
+    <td>5V Rail:1</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w4" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffff00" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>Ground Rail:2</td>
+    <td>
+     5:GY
+    </td>
+    <td>12V to 5V Converter:2:GND</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w5" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#999999" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#999999" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#999999" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>5V Rail:2</td>
+    <td>
+     6:PK
+    </td>
+    <td>Pico:40:VSYS</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w6" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff66cc" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff66cc" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff66cc" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>Pico:37:3V3(OUT)</td>
+    <td>
+     7:BU
+    </td>
+    <td>3V Rail:1</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w7" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#0066ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#0066ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#0066ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>Ground Rail:3</td>
+    <td>
+     8:RD
+    </td>
+    <td>Pico:39:GND</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w8" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff0000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff0000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff0000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>3V Rail:2</td>
+    <td>
+     9:BK
+    </td>
+    <td>MAX31855_egt:1:Vin</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w9" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>Ground Rail:4</td>
+    <td>
+     10:VT
+    </td>
+    <td>MAX31855_egt:3:GND</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w10" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#8000ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#8000ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#8000ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>3V Rail:2</td>
+    <td>
+     11:GYPK
+    </td>
+    <td>Hall Effect Sensor:1:Vin</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w11" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#999999" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff66cc" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#999999" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>Ground Rail:5</td>
+    <td>
+     12:RDBU
+    </td>
+    <td>Hall Effect Sensor:2:GND</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w12" height="10">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff0000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#0066ff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ff0000" border="0"></td></tr>
       <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
      </table>
     </td>

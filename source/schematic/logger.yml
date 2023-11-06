@@ -44,43 +44,45 @@ connectors:
 cables:
   Data: 
     gauge: 28 AWG
-    wirecount: 6
+    wirecount: 4
+    color_code: DIN
   Power :
     gauge: 28 AWG
-    wirecount: 5
+    wirecount: 12 
+    color_code: DIN 
 
 connections: 
   - 
     - 12V Source: [1]
-    - Power: [3]
+    - Power: [1]
     - 12V Rail: [1]
   -
     - 12V Source: [2]
-    - Power: [4]
+    - Power: [2]
     - Ground Rail: [1]
   - 
     - 12V Rail: [2]
-    - Power: [5]
+    - Power: [3]
     - 12V to 5V Converter: [1]
   - 
     - 12V to 5V Converter: [1]
-    - Power: [2]
+    - Power: [4]
     - 5V Rail: [1]
   - 
     - Ground Rail: [2]
-    - Power: [2]
+    - Power: [5]
     - 12V to 5V Converter: [2]
   -
     - 5V Rail: [2]
-    - Power: [1]
+    - Power: [6]
     - Pico: [40]
   - 
     - Pico: [37]
-    - Power: [1]
+    - Power: [7]
     - 3V Rail: [1]
   - 
     - Ground Rail: [3]
-    - Power: [1]
+    - Power: [8]
     - Pico: [39]
   -
     - Pico: [2,3,5]
@@ -88,22 +90,21 @@ connections:
     - MAX31855_egt: [4,5,6]
   - 
     - 3V Rail: [2]
-    - Power: [1]
+    - Power: [9]
     - MAX31855_egt: [1]
   -
     - Ground Rail: [4]
-    - Power: [1]
+    - Power: [10]
     - MAX31855_egt: [3]
   -
     - 3V Rail: [2]
-    - Power: [1]
+    - Power: [11]
     - Hall Effect Sensor: [1]
   - 
     - Ground Rail: [5]
-    - Power: [1]
+    - Power: [12]
     - Hall Effect Sensor: [2]
   - 
-    - Pico: [7]
+    - Pico: [6]
     - Data: [4]
     - Hall Effect Sensor: [3]
-
