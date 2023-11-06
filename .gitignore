@@ -1,9 +1,9 @@
 # ignore build directory
 **/build/*
+!**/build/.gittrack 
 
-**/Makefile
-
-!**/build/.gittrack
+# ignore wireviz compilation makefile on Linux machines
+**schematic/Makefile
 
 # ignore sdk
 pico-sdk
