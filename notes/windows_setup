@@ -1,0 +1,1 @@
+run "cmake -G "MinGW Makefiles" <source_dir>" in build dir on windows
