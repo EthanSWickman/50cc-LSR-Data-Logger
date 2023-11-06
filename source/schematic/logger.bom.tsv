@@ -1,10 +1,12 @@
 Id	Description	Qty	Unit	Designators
-1	Cable, 12 x 28 AWG	0	m	Power
-2	Cable, 4 x 28 AWG	0	m	Data
-3	Connector, ground, female, 5 pins	1		Ground Rail
-4	Connector, headers, draws 1.5ma, 6 pins	1		MAX31855_egt
-5	Connector, headers, male, 2 pins	1		12V Source
-6	Connector, headers, male, 3 pins	2		12V to 5V Converter, Hall Effect Sensor
-7	Connector, headers, male, 41 pins	1		Pico
-8	Connector, headers, male, 5 pins	1		12V Rail
-9	Connector, power, female, 5 pins	2		3V Rail, 5V Rail
+1	Cable, 10 x 28 AWG	0	m	Data
+2	Cable, 3 x 28 AWG	0	m	12V Power Wire
+3	Cable, 5 x 28 AWG	0	m	5V Power Wire
+4	Cable, 8 x 28 AWG	0	m	3V Power Wire
+5	Connector, ground, female, 6 pins	1		Ground Rail
+6	Connector, headers, draws 1.5ma, 6 pins	3		MAX31855_coolant, MAX31855_coolant2, MAX31855_egt
+7	Connector, headers, male, 2 pins	1		12V Source
+8	Connector, headers, male, 3 pins	2		12V to 5V Converter, Hall Effect Sensor
+9	Connector, headers, male, 41 pins	1		Pico
+10	Connector, headers, male, 5 pins	1		12V Rail
+11	Connector, power, female, 5 pins	2		3V Rail, 5V Rail
