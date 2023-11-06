@@ -8,11 +8,11 @@ connectors:
   12V Rail: 
     type: headers
     subtype: male
-    pincount: 5
+    pincount: 2
   5V Rail: 
     type: power
-    subtype: female
-    pincount: 5
+    subtype: female 
+    pincount: 2
     notes: maximum load 500 ma
   3V Rail: 
     type: power
@@ -38,6 +38,14 @@ connectors:
     notes: maximum load on gpio 50 ma (16 ma per pin)
 
   # sensors
+  Cowbell PCF8523 Clock:
+    type: headers
+    pinlabels: [CLOCK, DATA]
+    notes: soldered directly onto pins, no cables
+  Cowbell Micro SD Card Holder:
+    type: headers
+    pinlabels: [MISO, CS, SCK, MO]
+    notes: soldered directly onto pins, no cables
   MAX31855_egt: &templateMAX31855
     type: headers
     subtype: draws 1.5ma 
@@ -60,9 +68,9 @@ cables:
     gauge: 28 AWG
     wirecount: 10 
     color_code: DIN
-  AdaLogger: 
+  Cowbell:
     gauge: 28 AWG
-    wirecount: 10
+    wirecount: 6 
 
   # power cables
   12V Power Wire:
@@ -71,7 +79,7 @@ cables:
     color_code: DIN
   5V Power Wire: 
     gauge: 28 AWG
-    wirecount: 5
+    wirecount: 3
     color_code: DIN
   3V Power Wire:
     gauge: 28 AWG
@@ -113,6 +121,7 @@ connections:
 
 
   # 5V peripherals
+  # pico
   -
     - 5V Rail: [2]
     - 5V Power Wire: [3]
@@ -123,14 +132,30 @@ connections:
     - Pico: [39]
 
   # 3V peripherals
+  # PCF8523 clock
   - 
-    - Pico: [2]
-    - Data: [1]
-    - Hall Effect Sensor: [3]
+    - Pico: [7-8]
+    - Cowbell: [1-2]
+    - Cowbell PCF8523 Clock: [1-2]
+  # micro-SD Card holder
+  - 
+    - Pico: [22-23, 25-26]
+    - Cowbell: [3-6]
+    - Cowbell Micro SD Card Holder: [1-4]
+  # hall effect sensor
+  -
+    - 3V Rail: [2]
+    - 3V Power Wire: [6]
+    - Hall Effect Sensor: [1]
   - 
     - Ground Rail: [4]
     - 3V Power Wire: [3]
     - Hall Effect Sensor: [2]
+  - 
+    - Pico: [21]
+    - Data: [1]
+    - Hall Effect Sensor: [3]
+  # egt temperature sensor
   - 
     - 3V Rail: [2]
     - 3V Power Wire: [4]
@@ -140,9 +165,10 @@ connections:
     - 3V Power Wire: [5]
     - MAX31855_egt: [3]
   -
-    - Pico: [3,5,6]
+    - Pico: [2-3,5]
     - Data: [2-4]
     - MAX31855_egt: [4-6]
+  # coolant temperature sensor
   - 
     - 3V Rail: [3]
     - 3V Power Wire: [6]
@@ -152,9 +178,14 @@ connections:
     - 3V Power Wire: [7]
     - MAX31855_coolant: [3]
   - 
-    - Pico: [7, 8, 10]
-    - Data: [5-7]
-    - MAX31855_coolant: [4-6]
+    - MAX31855_egt: [4, 6]
+    - Data: [5-6]
+    - MAX31855_coolant: [4, 6]
+  - 
+    - Pico: [6]
+    - Data: [7]
+    - MAX31855_coolant: [5]
+  # coolant2 temperature sensor
   - 
     - 3V Rail: [4]
     - 3V Power Wire: [8]
@@ -164,11 +195,12 @@ connections:
     - 3V Power Wire: [8]
     - MAX31855_coolant2: [3]
   - 
-    - Pico: [11, 12, 13]
-    - Data: [8-10]
-    - MAX31855_coolant2: [4-6]
-  -
-    - 3V Rail: [2]
-    - 3V Power Wire: [6]
-    - Hall Effect Sensor: [1]
+    - MAX31855_coolant: [4, 6]
+    - Data: [8-9]
+    - MAX31855_coolant2: [4, 6]
+  - 
+    - Pico: [10]
+    - Data: [10]
+    - MAX31855_coolant2: [5]
+
 
