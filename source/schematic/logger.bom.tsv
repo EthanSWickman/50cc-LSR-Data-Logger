@@ -1,9 +1,9 @@
 Id	Description	Qty	Unit	Designators
-1	Cable, 10 x 28 AWG	0	m	Data
+1	Cable, 10 x 28 AWG	0	m	AdaLogger, Data
 2	Cable, 3 x 28 AWG	0	m	12V Power Wire
 3	Cable, 5 x 28 AWG	0	m	5V Power Wire
 4	Cable, 8 x 28 AWG	0	m	3V Power Wire
-5	Connector, ground, female, 6 pins	1		Ground Rail
+5	Connector, ground, female, 7 pins	1		Ground Rail
 6	Connector, headers, draws 1.5ma, 6 pins	3		MAX31855_coolant, MAX31855_coolant2, MAX31855_egt
 7	Connector, headers, male, 2 pins	1		12V Source
 8	Connector, headers, male, 3 pins	2		12V to 5V Converter, Hall Effect Sensor

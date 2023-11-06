@@ -1,4 +1,5 @@
 connectors: 
+  # power sources/rails
   12V Source: 
     type: headers
     subtype: male
@@ -8,10 +9,6 @@ connectors:
     type: headers
     subtype: male
     pincount: 5
-  12V to 5V Converter: 
-    type: headers
-    subtype: male
-    pinlabels: [Vin, GND, 5V]
   5V Rail: 
     type: power
     subtype: female
@@ -25,12 +22,22 @@ connectors:
   Ground Rail:
     type: ground
     subtype: female
-    pincount: 6
+    pincount: 7
+
+  # misc
+  12V to 5V Converter: 
+    type: headers
+    subtype: male
+    pinlabels: [Vin, GND, 5V]
+
+  # pico
   Pico:
     type: headers
     subtype: male
     pinlabels: [USB, GP0, GP1, GND, GP2, GP3, GP4, GP5, GND, GP6, GP7, GP8, GP9, GND, GP10, GP11, GP12, GP13, GND, GP14, GP15, GP16, GP17, GND, GP18, GP19, PG20, GP21, GND, GP22, RUN, GP26, GP27, GND, GP28, VREF, 3V3(OUT), 3V3_EN, GND, VSYS, VBUS]
     notes: maximum load on gpio 50 ma (16 ma per pin)
+
+  # sensors
   MAX31855_egt: &templateMAX31855
     type: headers
     subtype: draws 1.5ma 
@@ -48,20 +55,31 @@ connectors:
     pinlabels: [Vin, GND, OUT]
 
 cables:
+  # cables for data transmission
   Data: 
     gauge: 28 AWG
     wirecount: 10 
+    color_code: DIN
+  AdaLogger: 
+    gauge: 28 AWG
+    wirecount: 10
+
+  # power cables
   12V Power Wire:
     gauge: 28 AWG
     wirecount: 3 
+    color_code: DIN
   5V Power Wire: 
     gauge: 28 AWG
     wirecount: 5
+    color_code: DIN
   3V Power Wire:
     gauge: 28 AWG
     wirecount: 8 
+    color_code: DIN
  
 connections: 
+  # 12V expansion to rail
   - 
     - 12V Source: [1]
     - 12V Power Wire: [1]
@@ -70,6 +88,8 @@ connections:
     - 12V Source: [2]
     - 12V Power Wire: [2]
     - Ground Rail: [1]
+
+  # create 5V rail
   - 
     - 12V Rail: [2]
     - 12V Power Wire: [3]
@@ -82,24 +102,33 @@ connections:
     - Ground Rail: [2]
     - 5V Power Wire: [2]
     - 12V to 5V Converter: [2]
+
+  # create 3V rail
+  - 
+    - Pico: [37]
+    - 3V Power Wire: [1]
+    - 3V Rail: [1]
+
+  # 12V peripherals
+
+
+  # 5V peripherals
   -
     - 5V Rail: [2]
     - 5V Power Wire: [3]
     - Pico: [40]
   - 
-    - Pico: [37]
-    - 3V Power Wire: [1]
-    - 3V Rail: [1]
-  - 
     - Ground Rail: [3]
     - 3V Power Wire: [2]
     - Pico: [39]
+
+  # 3V peripherals
   - 
     - Pico: [2]
     - Data: [1]
     - Hall Effect Sensor: [3]
   - 
-    - Ground Rail: [5]
+    - Ground Rail: [4]
     - 3V Power Wire: [3]
     - Hall Effect Sensor: [2]
   - 
@@ -107,7 +136,7 @@ connections:
     - 3V Power Wire: [4]
     - MAX31855_egt: [1]
   -
-    - Ground Rail: [4]
+    - Ground Rail: [5]
     - 3V Power Wire: [5]
     - MAX31855_egt: [3]
   -
@@ -119,7 +148,7 @@ connections:
     - 3V Power Wire: [6]
     - MAX31855_coolant: [1]
   -
-    - Ground Rail: [5]
+    - Ground Rail: [6]
     - 3V Power Wire: [7]
     - MAX31855_coolant: [3]
   - 
@@ -131,7 +160,7 @@ connections:
     - 3V Power Wire: [8]
     - MAX31855_coolant2: [1]
   -
-    - Ground Rail: [6]
+    - Ground Rail: [7]
     - 3V Power Wire: [8]
     - MAX31855_coolant2: [3]
   - 
