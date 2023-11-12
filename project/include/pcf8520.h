@@ -27,7 +27,8 @@ void pcf8520_init();
 
 /*
 desc: writes current pcf8520 clock time to input buffer
-parameters: char buffer (18 bytes long)
+parameters: 
+    buffer: string to fill with current time (18 bytes long) 
 output: updates buffer with current time formatted as "HH:MM:SS MM/DD/YY"
 */
 void pcf8520_get_time_string(char* buffer);
@@ -38,5 +39,13 @@ parameters: N/A
 output: returns time struct with values for current pcf8520 time
 */
 struct time pcf8520_get_time();
+
+
+/*
+desc: sets the clock
+parameters: 
+    time: time struct with members representing time to set
+*/
+void pcf8520_set_time(struct time time); 
 
 #endif

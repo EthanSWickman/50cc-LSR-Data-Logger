@@ -9,15 +9,19 @@
 #include "pcf8520.h"
 
 int main() {
+    // init stdio
     stdio_init_all();
 
+    // init cyw43 
     if (cyw43_arch_init()) {
         printf("Wi-Fi init failed\n");
         return -1;
     }
 
+    // init pcf8520 clock
     pcf8520_init();
 
+    // main logging loop
     while (true) {
         char buf[18];
         pcf8520_get_time_string(buf);
