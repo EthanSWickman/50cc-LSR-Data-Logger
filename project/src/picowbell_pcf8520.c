@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "pcf8520.h"
+#include "picowbell_pcf8520.h"
 
 #include "hardware/i2c.h"
 

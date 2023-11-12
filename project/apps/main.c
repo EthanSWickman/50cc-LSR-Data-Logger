@@ -6,7 +6,7 @@
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 
-#include "pcf8520.h"
+#include "picowbell_pcf8520.h"
 
 int main() {
     // init stdio
