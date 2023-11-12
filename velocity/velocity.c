@@ -51,8 +51,6 @@ void core1_entry() {
             printll(rotations_queue);
             sd_card_write(front);
         }
-        //else 
-            //printf("rotations queue should be empty (%i), waiting for data to write ..\n", rotations_queue->len);
     }
 }
 
