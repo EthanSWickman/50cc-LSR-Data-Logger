@@ -9,7 +9,7 @@ const int CLOCKADDR = 0x68;
 const int SDAPIN = 4;
 const int SCLPIN = 5;
 
-void pcf8520_init() {
+void picowbell_pcf8520_init() {
     // initialize i2c0 controller
     i2c_init(i2c0, 400 * 1000);
 
@@ -22,15 +22,15 @@ void pcf8520_init() {
     gpio_pull_up(SDAPIN);
 }
 
-void pcf8520_get_time_string(char* buffer) {
+void picowbell_pcf8520_get_time_string(char* buffer) {
     // get time struct
-    struct time t = pcf8520_get_time();
+    struct time t = picowbell_pcf8520_get_time();
 
     // format time struct into string
     sprintf(buffer, "%02u:%02u:%02u %02u/%02u/%02u", t.hours, t.minutes, t.seconds, t.months, t.days, t.years);
 }
 
-struct time pcf8520_get_time() {
+struct time picowbell_pcf8520_get_time() {
     uint8_t reg = 0x03; // 0x03 is address of seconds register on pcf8520
     uint8_t rawTime[7];
 
@@ -51,7 +51,7 @@ struct time pcf8520_get_time() {
     return currTime;
 }
 
-void pcf8520_set_time(struct time time) {
+void picowbell_pcf8520_set_time(struct time time) {
     uint8_t timeBuf[7]; 
 
     // convert time struct to pcf8520 BCD format

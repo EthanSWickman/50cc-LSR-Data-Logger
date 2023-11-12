@@ -19,12 +19,12 @@ int main() {
     }
 
     // init pcf8520 clock
-    pcf8520_init();
+    picowbell_pcf8520_init();
 
     // main logging loop
     while (true) {
         char buf[18];
-        pcf8520_get_time_string(buf);
+        picowbell_pcf8520_get_time_string(buf);
         printf("%s\n", buf);
         sleep_ms(1000);
     }
