@@ -16,3 +16,7 @@ cp ./apps/runloop.uf2 /tmp/pico/
 sync
 
 umount /tmp/pico/
+
+sleep 1
+
+st minicom -D /dev/ttyACM0 -b 115200 
