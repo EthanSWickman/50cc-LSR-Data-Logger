@@ -10,3 +10,6 @@ pico-sdk
 
 # ignore .vscode
 .vscode
+
+# ignore Ethan's todo...
+ethan-todo
