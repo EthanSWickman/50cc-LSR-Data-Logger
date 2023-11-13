@@ -7,6 +7,7 @@
 #include "hardware/i2c.h"
 
 #include "picowbell_pcf8520.h"
+#include "picowbell_sd_card.h"
 
 int main() {
     // init stdio
@@ -23,9 +24,21 @@ int main() {
 
     // main logging loop
     while (true) {
-        char buf[18];
-        picowbell_pcf8520_get_time_string(buf);
-        printf("%s\n", buf);
+        // main data logging buffer
+        char mainBuf[20];
+
+        // get timestamp from clock
+        char timeBuf[18];
+        picowbell_pcf8520_get_time_string(timeBuf);
+
+        // test buffer
+        char buf[6] = {'h', 'e', 'l', 'l', 'o', '\0'};
+
+        // assemble buffer
+        sprintf(mainBuf, "%s,%s", timeBuf, buf);
+
+        // log buffer
+        picowbell_sd_card_write_line(mainBuf);
         sleep_ms(1000);
     }
 

@@ -13,3 +13,6 @@ This repository is the home of data logger development for the 50cc Land Speed R
 ## Git Etiquette
 - make a branch for new development, keep master clean, compileable, and in sync with the latest wiring diagram
 - make targeted commits with meaningful messages
+
+## Attributions
+- uses carlk3's SD card interface library: https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico (following https://www.digikey.com/en/maker/projects/raspberry-pi-pico-rp2040-sd-card-example-with-micropython-and-cc/e472c7f578734bfd96d437e68e670050)

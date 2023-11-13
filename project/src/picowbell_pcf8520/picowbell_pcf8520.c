@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "picowbell_pcf8520.h"
-
 #include "hardware/i2c.h"
+
+#include "picowbell_pcf8520.h"
 
 const int CLOCK_ADDR = 0x68;
 
