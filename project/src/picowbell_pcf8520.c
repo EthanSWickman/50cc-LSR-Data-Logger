@@ -4,22 +4,22 @@
 
 #include "hardware/i2c.h"
 
-const int CLOCKADDR = 0x68;
+const int CLOCK_ADDR = 0x68;
 
-const int SDAPIN = 4;
-const int SCLPIN = 5;
+const int SDA_PIN = 4;
+const int SCL_PIN = 5;
 
 void picowbell_pcf8520_init() {
     // initialize i2c0 controller
     i2c_init(i2c0, 400 * 1000);
 
     // set up pins
-    gpio_set_function(SCLPIN, GPIO_FUNC_I2C);
-    gpio_set_function(SDAPIN, GPIO_FUNC_I2C);
+    gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
 
     // pull pins high
-    gpio_pull_up(SCLPIN);
-    gpio_pull_up(SDAPIN);
+    gpio_pull_up(SCL_PIN);
+    gpio_pull_up(SDA_PIN);
 }
 
 void picowbell_pcf8520_get_time_string(char* buffer) {
@@ -35,8 +35,8 @@ struct time picowbell_pcf8520_get_time() {
     uint8_t rawTime[7];
 
     // read raw time from clock registers
-    i2c_write_blocking(i2c0, CLOCKADDR, &reg, 1, true);
-    i2c_read_blocking(i2c0, CLOCKADDR, rawTime, 7, false);
+    i2c_write_blocking(i2c0, CLOCK_ADDR, &reg, 1, true);
+    i2c_read_blocking(i2c0, CLOCK_ADDR, rawTime, 7, false);
 
     // convert raw data to time
     struct time currTime; 
@@ -68,6 +68,6 @@ void picowbell_pcf8520_set_time(struct time time) {
     for (int i = 0; i < 7; i++) {
         writeBuf[0] = i + 3;
         writeBuf[1] = timeBuf[i];
-        i2c_write_blocking(i2c0, CLOCKADDR, writeBuf, 2, false);
+        i2c_write_blocking(i2c0, CLOCK_ADDR, writeBuf, 2, false);
     }
 }
