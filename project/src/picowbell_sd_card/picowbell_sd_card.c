@@ -22,14 +22,14 @@ void picowbell_sd_card_write_line(char* buf) {
 
     fr = f_mount(&fs, "0:", 1);
 
-    //fr = f_open(&fil, "testfile", FA_WRITE || FA_CREATE_ALWAYS);
+    fr = f_open(&fil, "testfile", FA_WRITE || FA_CREATE_ALWAYS);
 
-    //ret = f_printf(&fil, "This is a test\n");
-    //ret = f_printf(&fil, "of writing to an SD card.\n");
+    ret = f_printf(&fil, "This is a test\n");
+    ret = f_printf(&fil, "of writing to an SD card.\n");
 
-    //fr = f_close(&fil);
+    fr = f_close(&fil);
 
-    //f_unmount("0:");
+    f_unmount("0:");
 
     //printf("writing %s to sd card...\n", buf);
 }
