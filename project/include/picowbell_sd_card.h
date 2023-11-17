@@ -1,19 +1,23 @@
 #ifndef PICOWBELL_SD_CARD_H
 #define PICOWBELL_SD_CARD_H
 
-/*
-desc: initializes attached sd card for data transmission
-parameters: N/A
-output: N/A
-*/
-void picowbell_sd_card_init();
+#include "ff.h"
 
 /*
-desc: write line from input string buffer to the attached sd card
+desc: initializes attached sd card for data transmission and mounts filesystem
 parameters: 
-    buffer: string to write to output as line
-output: writes text to SD card
+    fs: FatFS filesystem object pointer
+output: sets fs to the mounted SD card's filesystem
 */
-void picowbell_sd_card_write_line(char* buf);
+void picowbell_sd_card_init(FATFS* fs);
+
+/*
+desc: saves old log file and returns a new log file to write to 
+parameters: 
+    f: pointer to file object of old log file
+    fs: FatFS filesystem object pointer with mounted SD card filesystem 
+output: sets f to newly opened log file
+*/
+void picowbell_sd_card_new_log(FIL* f);
 
 #endif

@@ -19,26 +19,34 @@ int main() {
         return -1;
     }
 
+    // init sd card
+    FATFS fs;
+    picowbell_sd_card_init(&fs);
+
     // init pcf8520 clock
     picowbell_pcf8520_init();
 
+    // wait for button press on pin 1
+    gpio_init(0);
+    gpio_set_dir(0, GPIO_IN);
+    while (gpio_get(0) != 1) {
+        continue;
+    }
+
+    // open new log file
+    FIL f;
+    picowbell_sd_card_new_log(&f);
+
+    int i = 0;
     // main logging loop
     while (true) {
-        // main data logging buffer
-        char mainBuf[20];
-
         // get timestamp from clock
-        char timeBuf[18];
+        char timeBuf[20];
         picowbell_pcf8520_get_time_string(timeBuf);
 
-        // test buffer
-        char buf[6] = {'h', 'e', 'l', 'l', 'o', '\0'};
-
-        // assemble buffer
-        sprintf(mainBuf, "%s,%s", timeBuf, buf);
-
-        // log buffer
-        picowbell_sd_card_write_line(mainBuf);
+        // log data
+        f_printf(&f, "%s\n", timeBuf);
+        f_sync(&f);
         sleep_ms(1000);
     }
 
