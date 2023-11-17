@@ -1,0 +1,1 @@
+add_subdirectory(Pico_SD_Lib/FatFs_SPI)
