@@ -26,12 +26,13 @@ int main() {
     // init pcf8520 clock
     picowbell_pcf8520_init();
 
-    // wait for button press on pin 1
+    // wait for button press on pin 0
     gpio_init(0);
     gpio_set_dir(0, GPIO_IN);
     while (gpio_get(0) != 1) {
         continue;
     }
+    printf("logging to file...\n");
 
     // open new log file
     FIL f;
@@ -45,6 +46,7 @@ int main() {
         picowbell_pcf8520_get_time_string(timeBuf);
 
         // log data
+        printf("logging data: %s\n", timeBuf);
         f_printf(&f, "%s\n", timeBuf);
         f_sync(&f);
         sleep_ms(1000);
