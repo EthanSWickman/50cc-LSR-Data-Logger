@@ -1,2 +1,3 @@
 add_subdirectory(picowbell_pcf8520)
 add_subdirectory(picowbell_sd_card)
+add_subdirectory(writebuffer)

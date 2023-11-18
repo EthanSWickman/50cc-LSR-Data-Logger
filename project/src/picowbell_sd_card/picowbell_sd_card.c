@@ -10,9 +10,11 @@ void picowbell_sd_card_init(FATFS* fs) {
     f_mount(fs, "0:", 1);
 }
 
-void picowbell_sd_card_new_log(FIL* f) {
+void picowbell_sd_card_new_log(FIL* f, bool close_old) {
     // close old file
-    f_close(f);
+    if (close_old) {
+        f_close(f);
+    }
     
     // find new file number
     uint i = 0;
