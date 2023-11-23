@@ -11,7 +11,9 @@
 #include "picowbell_sd_card.h"
 #include "writebuffer.h"
 
-const uint HZ = 10;
+auto_init_mutex(my_mutex);
+
+const uint HZ = 2;
 const uint DELTA_T = 1000000 / HZ;
 
 void core1_entry() {
@@ -22,6 +24,25 @@ void core1_entry() {
     // open new log file
     FIL f;
     picowbell_sd_card_new_log(&f, 0);
+
+    struct writebuffer* wb = (struct writebuffer*) multicore_fifo_pop_blocking();
+
+    while (true) {
+        //printf("core 1: attempting read from writebuffer\n");
+        mutex_enter_blocking(&my_mutex);
+        //printf("core 1: reading from buffer\n");
+        char* wb_out = writebuffer_out(wb);
+        mutex_exit(&my_mutex);
+        if (wb_out == NULL) {
+            //printf("core 1: empty wb!\n");
+            continue;
+        }
+        else {
+            printf("core 1: writing to sd: %s\n", wb_out);
+            f_printf(&f, "%s\n", wb_out);
+            f_sync(&f);
+        }
+    }
 }
 
 int main() {
@@ -43,38 +64,43 @@ int main() {
     while (gpio_get(0) != 1) {
         continue;
     }
+
+    // light up the logging indicator
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+
+    // start logs
     printf("starting logs...\n");
     
+    // get current time
     datetime_t t = picowbell_pcf8520_get_time();
 
     struct writebuffer wb;
+    wb.in = wb.out = 0;
 
-    // test
-    printf("wb in: %u, wb out: %u", wb.in, wb.out);
-    for (int i = 0; i < 50; i++) {
-        sprintf(writebuffer_in(&wb), "hello there%d", i);
-    }
-    for (int i = 0; i < 50; i++) {
-        printf("%s\n", writebuffer_out(&wb));
-    }
-    for (int i = 0; i < 51; i++) {
-        sprintf(writebuffer_in(&wb), "bad%d", i);
-    }
-    for (int i = 0; i < 51; i++) {
-        printf("%s\n", writebuffer_out(&wb));
-    }
+    // push writebuffer address to core 1
+    multicore_fifo_push_blocking((uintptr_t) &wb);
 
-    return 1;
     // main logging loop
     while (true) {
         picowbell_pcf8520_wait_next_second(&t);
         absolute_time_t log_time = get_absolute_time();
         for (uint i = 0; i < HZ; i++) {
             // log data
-            sprintf(writebuffer_in(&wb), "%02d/%02d/%02d-%02d:%02d:%02d\n", t.month, t.day, t.year, t.hour, t.min, t.sec);
+            mutex_enter_blocking(&my_mutex);
+            printf("core 0: writing to buffer: %02d/%02d/%02d-%02d:%02d:%02d\n", t.month, t.day, t.year, t.hour, t.min, t.sec);
+            char* wb_in = writebuffer_in(&wb);
+            mutex_exit(&my_mutex);
+            if (wb_in == NULL) {
+                printf("core 0: full buffer!\n");
+            }
+            else {
+                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec);
+            }
 
+            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
             log_time += DELTA_T;
             sleep_until(log_time);
+            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
         }
         
     }
