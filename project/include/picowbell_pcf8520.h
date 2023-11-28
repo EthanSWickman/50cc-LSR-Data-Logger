@@ -7,17 +7,6 @@ functions for interacting with pcf8520 clock
 
 #include "pico/stdlib.h"
 
-// representation of time, down to the second
-//struct time {
-    //uint8_t years;
-    //uint8_t months;
-    //uint8_t days;
-    //uint8_t weekDays;
-    //uint8_t hours;
-    //uint8_t minutes;
-    //uint8_t seconds;
-//};
-
 /*
 desc: initializes pcf8520 clock pins, must be called before anything else
 parameters: N/A
