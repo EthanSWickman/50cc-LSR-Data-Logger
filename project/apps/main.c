@@ -13,13 +13,9 @@
 
 auto_init_mutex(my_mutex);
 
-const uint HZ = 500;
-const uint DELTA_T = 1000000 / HZ;
-const uint SAVE_INTERVAL = 512; // 2^13 = 8192
-
-// generally a f_write takes 70 * 10^-6 seconds, and fsync takes 15000 * 10^-6 seconds
-// in theory, this means we should be able to write several thousand times per second if we only sync once in a while
-// the desmos equation 1 > (100 * 10^-6)x + (20000 * 10^-6)(1/y) where x is HZ and y is the seconds in between saves gives us a SOLID 9000 hz maximum
+const uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
+const uint64_t DELTA_T = 1000000 / HZ;
+const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 
 void core1_entry() {
     // init sd card
@@ -30,19 +26,27 @@ void core1_entry() {
     FIL f;
     picowbell_sd_card_new_log(&f, 0);
 
+    // receive writebuffer address for string communication between cores
     struct writebuffer* wb = (struct writebuffer*) multicore_fifo_pop_blocking();
 
+    // forever write strings from core 0 to sd card
     uint i = 0;
     while (true) {
+        // protect writebuffer access
         mutex_enter_blocking(&my_mutex);
         char* wb_out = writebuffer_out(wb);
         mutex_exit(&my_mutex);
+
+        // continue if no logs to write
         if (wb_out == NULL) {
             continue;
         }
+
+        // write logs
         else {
-            absolute_time_t t = get_absolute_time();
             f_printf(&f, "%s\n", wb_out);
+
+            // sync sd card every SAVE_INTERVAL logs
             if ((i++ & (SAVE_INTERVAL - 1)) == 0) {
                 f_sync(&f);
             }
@@ -54,61 +58,75 @@ int main() {
     // init stdio
     stdio_init_all();
 
-    // launch core 1
-    multicore_launch_core1(core1_entry);
-
     // init cyw43 
-    cyw43_arch_init();
-    
-    // init pcf8520 clock
-    picowbell_pcf8520_init();
+    if (cyw43_arch_init()) {
+        printf("wifi init failed\n");
+        return -1;
+    }
 
-    // wait for button press on pin 0
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+
     gpio_init(0);
     gpio_set_dir(0, GPIO_IN);
     while (gpio_get(0) != 1) {
         continue;
     }
 
+    // launch core 1
+    multicore_launch_core1(core1_entry);
+   
+    // init pcf8520 clock
+    picowbell_pcf8520_init();
+
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // start logs
-    printf("starting logs...\n");
     
     // get current time
     datetime_t t = picowbell_pcf8520_get_time();
 
+    // initialize writebuffer for cross-core communication
     struct writebuffer wb;
     wb.in = wb.out = 0;
 
     // push writebuffer address to core 1
     multicore_fifo_push_blocking((uintptr_t) &wb);
 
+    // start logs
+    sleep_ms(1000);
+    printf("starting logs...\n");
+
     // main logging loop
     while (true) {
+        // wait until next second
         picowbell_pcf8520_wait_next_second(&t);
+
+        // send a log string to core 1 every DELTA_T microseconds  
         absolute_time_t log_time = get_absolute_time();
         for (uint i = 0; i < HZ; i++) {
-            // flash led
+            // flash led for 1st half of second
             if (i > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-            // log data
+            // protect writebuffer access 
             mutex_enter_blocking(&my_mutex);
             char* wb_in = writebuffer_in(&wb);
-            //printf("size of buffer = %d\n", wb.in - wb.out);
             mutex_exit(&my_mutex);
+
+            // if buffer is full, print error
             if (wb_in == NULL) {
                 printf("core 0: full buffer!\n");
             }
+
+            // write to buffer
             else {
                 sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec);
             }
 
-            log_time += DELTA_T;
+            // sleep until time to write next log
+            log_time = delayed_by_us(log_time, DELTA_T);
             sleep_until(log_time);
         }
-        // flash led
+
+        // turn led off
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
     }
 

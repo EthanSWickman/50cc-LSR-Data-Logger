@@ -2,7 +2,7 @@
 #define WRITEBUFFER_H
 
 #define LOG_SIZE 20
-#define WRITE_BUFFER_SIZE 32 // must be power of 2 for bit shifting mask to work!
+#define WRITE_BUFFER_SIZE 32 
 
 #include <stdlib.h>
 
