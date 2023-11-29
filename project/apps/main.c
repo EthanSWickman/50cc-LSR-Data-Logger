@@ -6,7 +6,9 @@
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 #include "pico/multicore.h"
+#include  "hardware/spi.h"
 
+#include "max31855.h"
 #include "picowbell_pcf8520.h"
 #include "picowbell_sd_card.h"
 #include "writebuffer.h"
@@ -78,6 +80,13 @@ int main() {
     // init pcf8520 clock
     picowbell_pcf8520_init();
 
+    // init max31855 thermocouple 1
+    max31855_init();
+
+    // init data for thermocouples
+    uint8_t thermo_data[4];
+    float thermo_data_output;
+
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
     
@@ -119,6 +128,15 @@ int main() {
             // write to buffer
             else {
                 sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec);
+
+                gpio_put(PICO_DEFAULT_SPI_CSN_PIN, false);
+                //sleep_us(10);
+                spi_read_blocking(spi_default, 0, &thermo_data, 4);
+                //sleep_us(10);
+                gpio_put(PICO_DEFAULT_SPI_CSN_PIN, true);
+                
+                max31855_getTemp(thermo_data, &thermo_data_output);
+                sprintf(wb_in, " thermocouple 1 temp: %f", thermo_data_output);
             }
 
             // sleep until time to write next log
