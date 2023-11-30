@@ -10,6 +10,7 @@
 #include "picowbell_pcf8520.h"
 #include "picowbell_sd_card.h"
 #include "writebuffer.h"
+#include "pin_config.h"
 
 auto_init_mutex(my_mutex);
 
@@ -66,9 +67,9 @@ int main() {
 
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    gpio_init(0);
-    gpio_set_dir(0, GPIO_IN);
-    while (gpio_get(0) != 1) {
+    gpio_init(LOG_START_BUTTON_PIN);
+    gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
+    while (gpio_get(LOG_START_BUTTON_PIN) != 1) {
         continue;
     }
 

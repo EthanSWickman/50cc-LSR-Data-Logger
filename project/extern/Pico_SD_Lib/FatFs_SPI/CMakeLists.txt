@@ -5,7 +5,7 @@ target_sources(FatFs_SPI INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/ff15/source/ff.c
     ${CMAKE_CURRENT_LIST_DIR}/sd_driver/sd_spi.c
     ${CMAKE_CURRENT_LIST_DIR}/sd_driver/demo_logging.c
-    ${CMAKE_CURRENT_LIST_DIR}/sd_driver/hw_config.c # added by 50c team, edit this file to change hardware configuration
+    ${CMAKE_CURRENT_LIST_DIR}/sd_driver/hw_config.c # added by 50cc team, edit this file to change hardware configuration
     ${CMAKE_CURRENT_LIST_DIR}/sd_driver/spi.c
     ${CMAKE_CURRENT_LIST_DIR}/sd_driver/sd_card.c
     ${CMAKE_CURRENT_LIST_DIR}/sd_driver/crc.c
@@ -20,6 +20,7 @@ target_include_directories(FatFs_SPI INTERFACE
     sd_driver
     include
 )
+
 target_link_libraries(FatFs_SPI INTERFACE
         hardware_spi
         hardware_dma
