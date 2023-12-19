@@ -12,6 +12,7 @@
 #include "picowbell_pcf8520.h"
 #include "picowbell_sd_card.h"
 #include "writebuffer.h"
+#include "pin_config.h"
 
 auto_init_mutex(my_mutex);
 
@@ -68,9 +69,9 @@ int main() {
 
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    gpio_init(0);
-    gpio_set_dir(0, GPIO_IN);
-    while (gpio_get(0) != 1) {
+    gpio_init(LOG_START_BUTTON_PIN);
+    gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
+    while (gpio_get(LOG_START_BUTTON_PIN) != 1) {
         continue;
     }
 
@@ -81,11 +82,11 @@ int main() {
     picowbell_pcf8520_init();
 
     // init max31855 thermocouple 1
-    max31855_init();
+    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN);
 
     // init data for thermocouples
     uint8_t thermo_data[4];
-    float thermo_data_output;
+    float thermo1_data_output;
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
@@ -115,6 +116,8 @@ int main() {
             // flash led for 1st half of second
             if (i > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output);
+
             // protect writebuffer access 
             mutex_enter_blocking(&my_mutex);
             char* wb_in = writebuffer_in(&wb);
@@ -127,16 +130,7 @@ int main() {
 
             // write to buffer
             else {
-                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec);
-
-                gpio_put(PICO_DEFAULT_SPI_CSN_PIN, false);
-                //sleep_us(10);
-                spi_read_blocking(spi_default, 0, &thermo_data, 4);
-                //sleep_us(10);
-                gpio_put(PICO_DEFAULT_SPI_CSN_PIN, true);
-                
-                max31855_getTemp(thermo_data, &thermo_data_output);
-                sprintf(wb_in, " thermocouple 1 temp: %f", thermo_data_output);
+                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d T1: %f", t.month, t.day, t.year, t.hour, t.min, t.sec, thermo1_data_output);
             }
 
             // sleep until time to write next log

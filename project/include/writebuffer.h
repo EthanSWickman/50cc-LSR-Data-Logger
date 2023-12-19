@@ -1,7 +1,7 @@
 #ifndef WRITEBUFFER_H 
 #define WRITEBUFFER_H
 
-#define LOG_SIZE 20 // maximum string size for storing a single log
+#define LOG_SIZE 35 // maximum string size for storing a single log
 #define WRITE_BUFFER_SIZE 32 // must be 2^n for some integer n, represents maximum number of strings in the writebuffer
 
 #include <stdlib.h>

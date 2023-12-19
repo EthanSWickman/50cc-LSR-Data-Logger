@@ -36,7 +36,8 @@ socket, which SPI it is driven by, and how it is wired.
 #include "ff.h" /* Obtains integer types */
 //
 #include "diskio.h" /* Declarations of disk functions */
-
+//
+#include "pin_config.h"
 /* 
 This example assumes the following hardware configuration:
 
@@ -58,9 +59,9 @@ This example assumes the following hardware configuration:
 static spi_t spis[] = {  // One for each SPI.
     {
         .hw_inst = spi0,  // SPI component
-        .miso_gpio = 16,  // GPIO number (not Pico pin number)
-        .mosi_gpio = 19,
-        .sck_gpio = 18,
+        .miso_gpio = SD_MISO_PIN,  // GPIO number (not Pico pin number)
+        .mosi_gpio = SD_MOSI_PIN,
+        .sck_gpio = SD_SCK_PIN,
 
         // .baud_rate = 1000 * 1000
         .baud_rate = 1000 * 1000
@@ -72,7 +73,7 @@ static sd_card_t sd_cards[] = {  // One for each SD card
     {
         .pcName = "0:",   // Name used to mount device
         .spi = &spis[0],  // Pointer to the SPI driving this card
-        .ss_gpio = 17,    // The SPI slave select GPIO for this SD card
+        .ss_gpio = SD_CS_PIN,    // The SPI slave select GPIO for this SD card
         .use_card_detect = true,
         .card_detect_gpio = 22,  // Card detect
         .card_detected_true = 1  // What the GPIO read returns when a card is

@@ -3,23 +3,22 @@
 #include "hardware/i2c.h"
 
 #include "picowbell_pcf8520.h"
+#include "pin_config.h"
 
 const int CLOCK_ADDR = 0x68;
 
-const int SDA_PIN = 4;
-const int SCL_PIN = 5;
 
 void picowbell_pcf8520_init() {
     // initialize i2c0 controller
     i2c_init(i2c0, 400 * 1000);
 
     // set up pins
-    gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(PCF8520_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(PCF8520_SDA_PIN, GPIO_FUNC_I2C);
 
     // pull pins high
-    gpio_pull_up(SCL_PIN);
-    gpio_pull_up(SDA_PIN);
+    gpio_pull_up(PCF8520_SCL_PIN);
+    gpio_pull_up(PCF8520_SDA_PIN);
 }
 
 void picowbell_pcf8520_wait_next_second(datetime_t* latestTime) {
