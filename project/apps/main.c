@@ -19,11 +19,11 @@
 auto_init_mutex(my_mutex);
 
 const volatile uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
-volatile uint64_t DELTA_T;
+volatile uint DELTA_T;
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 const uint PWM_COUNTER_MAX = 65535; // value pwm counter overflows at
 const uint PWM_GPIO_PIN = 15; //chose gpio 22 because is even (see pwm_counter_setup) and doesn't have any other function
-const bool cowbell_enabled = false; //toggle to false if you are testing without a cowbell, toggle on if testing with
+const bool cowbell_enabled = true; //toggle to false if you are testing without a cowbell, toggle on if testing with
 
 volatile uint signal_wrap_count = 0;
 volatile uint pwm_slice;
@@ -48,7 +48,7 @@ void core1_entry() {
         // forever write strings from core 0 to sd card
         uint i = 0; //could theoretically overflow, not extremely likely but may cause wierd bugs after several hours 
         while (true) {
-            printf("writing write buffer to sd card...\n");
+            //printf("writing write buffer to sd card...\n");
             // protect writebuffer access
             mutex_enter_blocking(&my_mutex);
             char* wb_out = writebuffer_out(wb);
@@ -148,10 +148,11 @@ void setup_test_alarm(uint alarm_num) {
 }
 
 //only refactored to make toggling between alarm / rtc easier
-void write_loop(absolute_time_t log_time) {    
+void write_loop(uint64_t log_time) {    
+    printf("input log time: %i\n", log_time);
     //calc rotations
     uint rotations = calc_rotations();
-    printf("Current rotations: %i\n");
+    printf("Current rotations: %i\n", rotations);
 
     // protect writebuffer access 
     mutex_enter_blocking(&my_mutex);
@@ -172,6 +173,7 @@ void write_loop(absolute_time_t log_time) {
             sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", 0, 0, 0, 0, 0, 0, rotations);
     }
 
+    //previous part of function takes a certain amount of time ot execute, must be accounted for
     if (cowbell_enabled) {
         puts("delaying until next log");
         // sleep until time to write next log
@@ -184,7 +186,16 @@ void write_loop(absolute_time_t log_time) {
 
 int main() {
     DELTA_T = 1000000 / HZ;
-    setup_test_alarm(0);
+    if (!cowbell_enabled) {
+        //setup alarm if no cowbell
+        setup_test_alarm(0);
+    }
+    else {
+        // init pcf8520 clock
+        picowbell_pcf8520_init();
+        // get current time
+        t = picowbell_pcf8520_get_time();
+    }
     puts("Setting up...");
     // init stdio
     stdio_init_all();
@@ -202,17 +213,6 @@ int main() {
 
     //setup PWM counter
     pwm_slice = pwm_counter_setup(PWM_GPIO_PIN);
-
-    // if (!cowbell_enabled) {
-    //     //setup alarm if no cowbell
-        
-    // }
-    // else {
-    //     // init pcf8520 clock
-    //     picowbell_pcf8520_init();
-    //     // get current time
-    //     t = picowbell_pcf8520_get_time();
-    // }
 
     // launch core 1
     multicore_launch_core1(core1_entry);
@@ -237,11 +237,13 @@ int main() {
         // wait until next second
         picowbell_pcf8520_wait_next_second(&t);
 
-        // send a log string to core 1 every DELTA_T microseconds  
-        absolute_time_t log_time = get_absolute_time();
         for (uint i = 0; i < HZ; i++) {
             // flash led for 1st half of second
-            if (i > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+            // send a log string to core 1 every DELTA_T microseconds  
+            uint64_t log_time = time_us_64();
+            printf("log time before passed to function: %i\n");
+            printf("current iteration is: %i\n", i);
+            if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
             write_loop(log_time);
         }
