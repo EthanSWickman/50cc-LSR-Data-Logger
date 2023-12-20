@@ -5,7 +5,7 @@
 #include "hardware/pwm.h"
 #include <stdio.h>
 
-const volatile uint PWM_COUNTER_MAX  = 65535; // value pwm counter overflows at
+#define PWM_COUNTER_MAX 65535 // value pwm counter overflows at
 
 //use to set up hardware wrapping fucntion
 typedef void (*funcPtr);

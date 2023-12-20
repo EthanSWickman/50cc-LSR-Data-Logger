@@ -15,14 +15,14 @@
 #include "picowbell_pcf8520.h"
 #include "picowbell_sd_card.h"
 #include "writebuffer.h"
+#include "hes.h"
+#include "pin_config.h"
 
 auto_init_mutex(my_mutex);
 
 const volatile uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
 volatile uint DELTA_T;
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
-const uint PWM_COUNTER_MAX = 65535; // value pwm counter overflows at
-const uint PWM_GPIO_PIN = 15; //chose gpio 22 because is even (see pwm_counter_setup) and doesn't have any other function
 const bool cowbell_enabled = true; //toggle to false if you are testing without a cowbell, toggle on if testing with
 
 volatile uint signal_wrap_count = 0;
@@ -89,27 +89,27 @@ https://github.com/richardjkendall/rp2040-freq-counter/blob/main/pwm/main.c
 since we already have a timing system in place implenting a pps (pulse per second)
 using a gpio was not needed.
 */ 
-uint pwm_counter_setup(uint gpio) {
-    //DO NOT try to use an even GPIO (gpio 0, 2, 4 etc) channel, will not work
-    printf("pwm is on channel b: %b\n", pwm_gpio_to_channel(gpio) == PWM_CHAN_B);
-    //convert the gpio number into a PWM slice
-    uint slice_num = pwm_gpio_to_slice_num(gpio);
-    pwm_config cfg = pwm_get_default_config();
-    //set the pwm to detect rising edge 
-    pwm_config_set_clkdiv_mode(&cfg, PWM_DIV_B_RISING);
-    pwm_config_set_clkdiv(&cfg, 1.f);
-    pwm_init(slice_num, &cfg, false);
-    //tell gpio to be assigned to a PWM slice 
-    gpio_set_function(gpio, GPIO_FUNC_PWM);
+// uint pwm_counter_setup(uint gpio) {
+//     //DO NOT try to use an even GPIO (gpio 0, 2, 4 etc) channel, will not work
+//     printf("pwm is on channel b: %b\n", pwm_gpio_to_channel(gpio) == PWM_CHAN_B);
+//     //convert the gpio number into a PWM slice
+//     uint slice_num = pwm_gpio_to_slice_num(gpio);
+//     pwm_config cfg = pwm_get_default_config();
+//     //set the pwm to detect rising edge 
+//     pwm_config_set_clkdiv_mode(&cfg, PWM_DIV_B_RISING);
+//     pwm_config_set_clkdiv(&cfg, 1.f);
+//     pwm_init(slice_num, &cfg, false);
+//     //tell gpio to be assigned to a PWM slice 
+//     gpio_set_function(gpio, GPIO_FUNC_PWM);
 
-    //setup nterrupt handler to deal with overflows
-    pwm_set_irq_enabled(slice_num, true);
-    irq_set_exclusive_handler(PWM_IRQ_WRAP, on_pwm_wrap);
-    irq_set_enabled(PWM_IRQ_WRAP, true);
+//     //setup nterrupt handler to deal with overflows
+//     pwm_set_irq_enabled(slice_num, true);
+//     irq_set_exclusive_handler(PWM_IRQ_WRAP, on_pwm_wrap);
+//     irq_set_enabled(PWM_IRQ_WRAP, true);
 
-    pwm_set_enabled(slice_num, true);
-    return slice_num; 
-}
+//     pwm_set_enabled(slice_num, true);
+//     return slice_num; 
+// }
 
 /*
 actual velocity calculation is done in other core so we dont affect the 
@@ -117,16 +117,16 @@ max detectable rpms. it would have to get to above 65k rpms to matter,
 so we are probablly fine with or without the wrap checking. including just 
 to be safe, will remove if multiply is negatively impacting performance.
 */
-uint calc_rotations() {
-    //calculate current rotations to add to the write buffer
-    uint counter = pwm_get_counter(pwm_slice);
-    printf("current pwm counter value %i for slice number %i\n", counter, pwm_slice);
-    uint rotations = (signal_wrap_count * PWM_COUNTER_MAX) + counter;
-    printf("total rotations: %i\n", rotations);
-    signal_wrap_count = 0; //reset count for next time interval
-    pwm_set_counter(pwm_slice, 0); 
-    return rotations;
-}
+// uint calc_rotations() {
+//     //calculate current rotations to add to the write buffer
+//     uint counter = pwm_get_counter(pwm_slice);
+//     printf("current pwm counter value %i for slice number %i\n", counter, pwm_slice);
+//     uint rotations = (signal_wrap_count * PWM_COUNTER_MAX) + counter;
+//     printf("total rotations: %i\n", rotations);
+//     signal_wrap_count = 0; //reset count for next time interval
+//     pwm_set_counter(pwm_slice, 0); 
+//     return rotations;
+// }
 
 void alarm0_irq() {
     //library should clear interrupt for us
@@ -151,7 +151,7 @@ void setup_test_alarm(uint alarm_num) {
 void write_loop(uint64_t log_time) {    
     printf("input log time: %i\n", log_time);
     //calc rotations
-    uint rotations = calc_rotations();
+    uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
     printf("Current rotations: %i\n", rotations);
 
     // protect writebuffer access 
@@ -212,7 +212,7 @@ int main() {
     gpio_pull_up(PWM_GPIO_PIN);
 
     //setup PWM counter
-    pwm_slice = pwm_counter_setup(PWM_GPIO_PIN);
+    pwm_slice = pwm_counter_setup(PWM_GPIO_PIN, on_pwm_wrap);
 
     // launch core 1
     multicore_launch_core1(core1_entry);

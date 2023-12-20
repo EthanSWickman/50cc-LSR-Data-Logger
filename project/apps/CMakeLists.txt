@@ -9,6 +9,7 @@ target_link_libraries(runloop
     picowbell_pcf8520
     picowbell_sd_card
     writebuffer
+    hes
 )
 
 pico_enable_stdio_usb(runloop 1)

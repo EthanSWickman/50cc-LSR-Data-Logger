@@ -59,7 +59,7 @@ UART1:
 //const uint PIN = 12;
 //const uint PIN = 13;
 //const uint PIN = 14;
-//const uint PIN = 15;
+#define PWM_GPIO_PIN 15
 #define SD_MISO_PIN 16 // ADALOGGER IMPOSED
 #define SD_CS_PIN 17 // ADALOGGER IMPOSED
 #define SD_SCK_PIN 18 // ADALOGGER IMPOSED
