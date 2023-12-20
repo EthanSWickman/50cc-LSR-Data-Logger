@@ -3,7 +3,7 @@
 This repository is the home of data logger development for the 50cc Land Speed Record Motorcycle Racing Team at Oregon State University .
 
 ## Project Structure 
-- /project/ - code base (we use C and CMake) - loosely follows https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html
+- /project/ - code base (C and CMake) - loosely follows https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html
     - /project/apps - files to be compiled into executables
     - /project/src - library implementation files
     - /project/include - library header files
