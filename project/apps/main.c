@@ -78,81 +78,9 @@ void on_pwm_wrap() {
     signal_wrap_count++;
 }
 
-//setup PWM counter
-/*
-the basic idea of the counter is this: count the number of edges detected from 
-the HES using a PWM slice. since the counter is only 16 bits, it will 
-overflow when its value is 2^16 - 1 and you try to increment it.
-this is why we keep track of the number of wraps using an interrupt handler.
-code is heavily inspired by this github repository reccomended by ethan: 
-https://github.com/richardjkendall/rp2040-freq-counter/blob/main/pwm/main.c
-since we already have a timing system in place implenting a pps (pulse per second)
-using a gpio was not needed.
-*/ 
-// uint pwm_counter_setup(uint gpio) {
-//     //DO NOT try to use an even GPIO (gpio 0, 2, 4 etc) channel, will not work
-//     printf("pwm is on channel b: %b\n", pwm_gpio_to_channel(gpio) == PWM_CHAN_B);
-//     //convert the gpio number into a PWM slice
-//     uint slice_num = pwm_gpio_to_slice_num(gpio);
-//     pwm_config cfg = pwm_get_default_config();
-//     //set the pwm to detect rising edge 
-//     pwm_config_set_clkdiv_mode(&cfg, PWM_DIV_B_RISING);
-//     pwm_config_set_clkdiv(&cfg, 1.f);
-//     pwm_init(slice_num, &cfg, false);
-//     //tell gpio to be assigned to a PWM slice 
-//     gpio_set_function(gpio, GPIO_FUNC_PWM);
-
-//     //setup nterrupt handler to deal with overflows
-//     pwm_set_irq_enabled(slice_num, true);
-//     irq_set_exclusive_handler(PWM_IRQ_WRAP, on_pwm_wrap);
-//     irq_set_enabled(PWM_IRQ_WRAP, true);
-
-//     pwm_set_enabled(slice_num, true);
-//     return slice_num; 
-// }
-
-/*
-actual velocity calculation is done in other core so we dont affect the 
-max detectable rpms. it would have to get to above 65k rpms to matter,
-so we are probablly fine with or without the wrap checking. including just 
-to be safe, will remove if multiply is negatively impacting performance.
-*/
-// uint calc_rotations() {
-//     //calculate current rotations to add to the write buffer
-//     uint counter = pwm_get_counter(pwm_slice);
-//     printf("current pwm counter value %i for slice number %i\n", counter, pwm_slice);
-//     uint rotations = (signal_wrap_count * PWM_COUNTER_MAX) + counter;
-//     printf("total rotations: %i\n", rotations);
-//     signal_wrap_count = 0; //reset count for next time interval
-//     pwm_set_counter(pwm_slice, 0); 
-//     return rotations;
-// }
-
-void alarm0_irq() {
-    //library should clear interrupt for us
-    alarm0_triggers++;
-    hardware_alarm_set_target(0, 1000000 * (alarm0_triggers + 1)); //reset alarm to go off every time interval
-    alarm0_flag = true;
-    printf("alarm triggered, global timer is %i\n", time_us_64());
-    return;
-}
-
-//purely exists to test program without cowbell 
-//as that has the RTC that the timing system relies on
-void setup_test_alarm(uint alarm_num) {
-    puts("claiming alarm...");
-    hardware_alarm_claim(alarm_num); //0 == alarm 0 interrupt
-    hardware_alarm_set_target(alarm_num, 1000000); //set harware alarm to go off in DELTA_T micorseconds
-    hardware_alarm_set_callback(alarm_num, alarm0_irq); //assign irq to the alarm to tell it what to do when it is set off
-    return;
-}
-
-//only refactored to make toggling between alarm / rtc easier
 void write_loop(uint64_t log_time) {    
-    printf("input log time: %i\n", log_time);
     //calc rotations
     uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
-    printf("Current rotations: %i\n", rotations);
 
     // protect writebuffer access 
     mutex_enter_blocking(&my_mutex);
@@ -167,36 +95,23 @@ void write_loop(uint64_t log_time) {
     else {
         printf("writing to write buffer...\n");
         // write to buffer
-        if (cowbell_enabled)
-            sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations);
-        else //purely for testing if dont have cowbell access
-            sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", 0, 0, 0, 0, 0, 0, rotations);
+        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations);
     }
 
-    //previous part of function takes a certain amount of time ot execute, must be accounted for
-    if (cowbell_enabled) {
-        puts("delaying until next log");
-        // sleep until time to write next log
-        log_time = delayed_by_us(log_time, DELTA_T);
-        sleep_until(log_time);
-    }
-    puts("finished writing to write buffer, waiting for interrupt...");
-    printf("global timer is %i\n", time_us_64());
+    puts("delaying until next log");
+    // sleep until time to write next log
+    log_time = delayed_by_us(log_time, DELTA_T);
+    sleep_until(log_time);
 }
 
 int main() {
     DELTA_T = 1000000 / HZ;
-    if (!cowbell_enabled) {
-        //setup alarm if no cowbell
-        setup_test_alarm(0);
-    }
-    else {
-        // init pcf8520 clock
-        picowbell_pcf8520_init();
-        // get current time
-        t = picowbell_pcf8520_get_time();
-    }
-    puts("Setting up...");
+
+    // init pcf8520 clock
+    picowbell_pcf8520_init();
+    // get current time
+    t = picowbell_pcf8520_get_time();
+
     // init stdio
     stdio_init_all();
 
@@ -205,8 +120,6 @@ int main() {
         printf("wifi init failed\n");
         return -1;
     }
-
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     //setup HES
     gpio_pull_up(PWM_GPIO_PIN);
@@ -230,10 +143,8 @@ int main() {
 
     // start logs
     printf("starting logs...\n");
-    printf("Cowbell is enabled: %b\n", cowbell_enabled);
-
     // main logging loop
-    while (cowbell_enabled) {
+    while (true) {
         // wait until next second
         picowbell_pcf8520_wait_next_second(&t);
 
@@ -246,16 +157,6 @@ int main() {
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
             write_loop(log_time);
-        }
-    }
-
-    while (!cowbell_enabled) {
-        if (alarm0_flag) {
-            puts("processing alarm in main thread");
-            if (alarm0_triggers % 2 == 0) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-            else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
-            write_loop(0);
-            alarm0_flag = false;
         }
     }
 }
