@@ -82,7 +82,7 @@ int main() {
     picowbell_pcf8520_init();
 
     // init max31855 thermocouple 1
-    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN);
+    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
 
     // init data for thermocouples
     uint8_t thermo_data[4];
@@ -116,7 +116,8 @@ int main() {
             // flash led for 1st half of second
             if (i > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output);
+            // read thermo1 temperature to output var (4th param sets verbose)
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
 
             // protect writebuffer access 
             mutex_enter_blocking(&my_mutex);
@@ -130,7 +131,7 @@ int main() {
 
             // write to buffer
             else {
-                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d T1: %f", t.month, t.day, t.year, t.hour, t.min, t.sec, thermo1_data_output);
+                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d T1: %.2f F", t.month, t.day, t.year, t.hour, t.min, t.sec, thermo1_data_output);
             }
 
             // sleep until time to write next log
