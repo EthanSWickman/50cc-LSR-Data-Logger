@@ -100,7 +100,7 @@ void max31855_getTemp(uint8_t data[], float* buff, int verbose){
     }
 
     // convert to fahrenheit
-    float sensor_temp_F = (sensor_temp_C * (9/5) + 32); 
+    float sensor_temp_F = (sensor_temp_C * 1.8 + 32); 
 
     // print temp if verbose is true
     if(verbose){
