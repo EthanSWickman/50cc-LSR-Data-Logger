@@ -5,6 +5,7 @@
 #include "pico/cyw43_arch.h"
 #include "pico/binary_info.h"
 #include "pico/multicore.h"
+#include  "hardware/spi.h"
 
 #include "hardware/i2c.h"
 #include "hardware/gpio.h"
@@ -16,6 +17,7 @@
 #include "picowbell_sd_card.h"
 #include "writebuffer.h"
 #include "hes.h"
+#include "max31855.h"
 #include "pin_config.h"
 
 auto_init_mutex(my_mutex);
@@ -82,6 +84,12 @@ void write_loop(uint64_t log_time) {
     //calc rotations
     uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
+    uint8_t thermo_data[4];
+    float thermo1_data_output;
+
+    // max31855
+    max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
+
     // protect writebuffer access 
     mutex_enter_blocking(&my_mutex);
     char* wb_in = writebuffer_in(&wb);
@@ -95,7 +103,7 @@ void write_loop(uint64_t log_time) {
     else {
         printf("writing to write buffer...\n");
         // write to buffer
-        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations);
+        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
     }
 
     puts("delaying until next log");
@@ -127,8 +135,20 @@ int main() {
     //setup PWM counter
     pwm_slice = pwm_counter_setup(PWM_GPIO_PIN, on_pwm_wrap);
 
+    gpio_init(LOG_START_BUTTON_PIN);
+    gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
+    while (gpio_get(LOG_START_BUTTON_PIN) != 1) {
+        continue;
+    }
+
     // launch core 1
     multicore_launch_core1(core1_entry);
+
+    // init max31855 thermocouple 1
+    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
+
+    // init data for thermocouples
+
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
