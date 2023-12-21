@@ -45,7 +45,7 @@ UART1:
 */
 
 #define LOG_START_BUTTON_PIN 0
-//const uint PIN = 1;
+#define PWM_GPIO_PIN 1
 //const uint PIN = 2;
 //const uint PIN = 3;
 #define PCF8520_SDA_PIN 4 // ADALOGGER IMPOSED
@@ -59,7 +59,7 @@ UART1:
 //const uint PIN = 12;
 //const uint PIN = 13;
 //const uint PIN = 14;
-#define PWM_GPIO_PIN 15
+//const uint PIN = 15;
 #define SD_MISO_PIN 16 // ADALOGGER IMPOSED
 #define SD_CS_PIN 17 // ADALOGGER IMPOSED
 #define SD_SCK_PIN 18 // ADALOGGER IMPOSED
