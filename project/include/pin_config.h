@@ -46,29 +46,29 @@ UART1:
 
 #define LOG_START_BUTTON_PIN 0
 #define PWM_GPIO_PIN 1
-//const uint PIN = 2;
-//const uint PIN = 3;
+//#define PIN_2 = 2;
+//#define PIN_3 = 3;
 #define PCF8520_SDA_PIN 4 // ADALOGGER IMPOSED
 #define PCF8520_SCL_PIN 5 // ADALOGGER IMPOSED
-//const uint PIN = 6;
-//const uint PIN = 7;
-//const uint PIN = 8;
-//const uint PIN = 9;
+//#define PIN_6 = 6;
+//#define PIN_7 = 7;
+//#define PIN_8 = 8;
+//#define PIN_9 = 9;
 #define Thermo1_SCK_PIN 10 // max31855, flexible (SPI)
 #define Thermo1_TX_PIN 11 // max31855, flexible (SPI), not actually used by max31855
 #define Thermo1_RX_PIN 12 // max31855, flexible (SPI), connected to max31855 DO pin
 #define Thermo1_CSN_PIN 13 // max31855, flexible (SPI)
-//const uint PIN = 14;
-//const uint PIN = 15;
+//#define PIN_14 = 14;
+//#define PIN_15 = 15;
 #define SD_MISO_PIN 16 // ADALOGGER IMPOSED
 #define SD_CS_PIN 17 // ADALOGGER IMPOSED
 #define SD_SCK_PIN 18 // ADALOGGER IMPOSED
 #define SD_MOSI_PIN 19 // ADALOGGER IMPOSED
-//const uint PIN = 20;
-//const uint PIN = 21;
-//const uint PIN = 22;
-//const uint PIN = 26;
-//const uint PIN = 27;
-//const uint PIN = 28;
+//#define PIN_20 = 20;
+//#define PIN_21 = 21;
+//#define PIN_22 = 22;
+//#define PIN_23 = 26;
+//#define PIN_24 = 27;
+//#define PIN_25 = 28;
 
 #endif
