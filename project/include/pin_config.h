@@ -45,7 +45,7 @@ UART1:
 */
 
 #define LOG_START_BUTTON_PIN 0
-#define PWM_GPIO_PIN 1
+#define VELOCITY_PWM_PIN 1
 //#define PIN_2 = 2;
 //#define PIN_3 = 3;
 #define PCF8520_SDA_PIN 4 // ADALOGGER IMPOSED
