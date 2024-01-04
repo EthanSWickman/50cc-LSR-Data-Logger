@@ -133,7 +133,7 @@ int main() {
             mutex_exit(&my_mutex);
 
             // write string to inter-core buffer to buffer
-            if (wb_in) {
+            if (wb_in != NULL) {
                 sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
             }
             else { // buffer full error
