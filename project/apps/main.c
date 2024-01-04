@@ -22,57 +22,51 @@
 
 auto_init_mutex(my_mutex);
 
-const volatile uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
-volatile uint DELTA_T;
+const uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
+uint DELTA_T = 1000000 / HZ; // time in microseconds between logs
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
-const bool cowbell_enabled = true; //toggle to false if you are testing without a cowbell, toggle on if testing with
 
 volatile uint signal_wrap_count = 0;
 volatile uint pwm_slice;
-volatile bool alarm0_flag; //tells main loop wether to process new information or not
-volatile uint alarm0_triggers = 0;
+
 struct writebuffer wb;
 datetime_t t;
 
 void core1_entry() {
-    if (cowbell_enabled) {
-        // init sd card
-        FATFS fs;
-        picowbell_sd_card_init(&fs);
+    // init sd card
+    FATFS fs;
+    picowbell_sd_card_init(&fs);
 
-        // open new log file
-        FIL f;
-        picowbell_sd_card_new_log(&f, 0);
+    // open new log file
+    FIL f;
+    picowbell_sd_card_new_log(&f, 0);
 
-        // receive writebuffer address for string communication between cores
-        struct writebuffer* wb = (struct writebuffer*) multicore_fifo_pop_blocking();
+    // receive writebuffer address for string communication between cores
+    struct writebuffer* wb = (struct writebuffer*) multicore_fifo_pop_blocking();
 
-        // forever write strings from core 0 to sd card
-        uint i = 0; //could theoretically overflow, not extremely likely but may cause wierd bugs after several hours 
-        while (true) {
-            //printf("writing write buffer to sd card...\n");
-            // protect writebuffer access
-            mutex_enter_blocking(&my_mutex);
-            char* wb_out = writebuffer_out(wb);
-            mutex_exit(&my_mutex);
+    // forever write strings from core 0 to sd card
+    uint i = 0;
+    while (true) {
+        // protect writebuffer access and read from writebuffer
+        mutex_enter_blocking(&my_mutex);
+        char* wb_out = writebuffer_out(wb);
+        mutex_exit(&my_mutex);
 
-            // continue if no logs to write
-            if (wb_out == NULL) {
-                continue;
-            }
+        // continue if no logs to write
+        if (wb_out == NULL) {
+            continue;
+        }
 
-            // write logs
-            else {
-                f_printf(&f, "%s\n", wb_out);
+        // write logs to sd card
+        else {
+            f_printf(&f, "%s\n", wb_out);
 
-                // sync sd card every SAVE_INTERVAL logs
-                if ((i++ & (SAVE_INTERVAL - 1)) == 0) {
-                    f_sync(&f);
-                }
+            // sync sd card every SAVE_INTERVAL logs
+            if ((i++ & (SAVE_INTERVAL - 1)) == 0) {
+                f_sync(&f);
             }
         }
     }
-    
 }
 
 void on_pwm_wrap() {
@@ -84,36 +78,31 @@ void write_loop(uint64_t log_time) {
     //calc rotations
     uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
+    // temperature
     uint8_t thermo_data[4];
     float thermo1_data_output;
-
-    // max31855
     max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
 
-    // protect writebuffer access 
+    // protect writebuffer access and get next buffer slot to write to 
     mutex_enter_blocking(&my_mutex);
     char* wb_in = writebuffer_in(&wb);
     mutex_exit(&my_mutex);
 
-    // if buffer is full, print error
-    if (wb_in == NULL) {
-        printf("core 0: full buffer!\n");
-        return;
-    }
-    else {
-        printf("writing to write buffer...\n");
-        // write to buffer
+    // write to buffer
+    if (wb_in != NULL) {
         sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
     }
+    else {
+        // full buffer error
+        printf("core 0: full buffer!\n");
+    }
 
-    puts("delaying until next log");
     // sleep until time to write next log
     log_time = delayed_by_us(log_time, DELTA_T);
     sleep_until(log_time);
 }
 
 int main() {
-    DELTA_T = 1000000 / HZ;
 
     // init pcf8520 clock
     picowbell_pcf8520_init();
@@ -156,8 +145,6 @@ int main() {
 
     // push writebuffer address to core 1
     multicore_fifo_push_blocking((uintptr_t) &wb);
-
-    alarm0_flag = false;
 
     // start logs
     printf("starting logs...\n");
