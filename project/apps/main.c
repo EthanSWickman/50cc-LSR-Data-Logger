@@ -147,8 +147,6 @@ int main() {
     // init max31855 thermocouple 1
     max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
 
-    // init data for thermocouples
-
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
@@ -172,8 +170,6 @@ int main() {
             // flash led for 1st half of second
             // send a log string to core 1 every DELTA_T microseconds  
             uint64_t log_time = time_us_64();
-            printf("log time before passed to function: %i\n");
-            printf("current iteration is: %i\n", i);
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
             write_loop(log_time);
