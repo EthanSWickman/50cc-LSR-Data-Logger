@@ -130,10 +130,10 @@ int main() {
     }
 
     //setup HES
-    gpio_pull_up(PWM_GPIO_PIN);
+    gpio_pull_up(VELOCITY_PWM_PIN);
 
     //setup PWM counter
-    pwm_slice = pwm_counter_setup(PWM_GPIO_PIN, on_pwm_wrap);
+    pwm_slice = pwm_counter_setup(VELOCITY_PWM_PIN, on_pwm_wrap);
 
     gpio_init(LOG_START_BUTTON_PIN);
     gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
