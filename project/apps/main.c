@@ -80,15 +80,33 @@ void on_pwm_wrap() {
     signal_wrap_count++;
 }
 
-void write_loop(uint64_t log_time) {    
+void write_loop(uint64_t log_time, int numThermos) {    
     //calc rotations
     uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
-    uint8_t thermo_data[4];
-    float thermo1_data_output;
-
     // max31855
-    max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
+    switch (numThermos) {
+        case 2: 
+            uint8_t thermo_data_2[4];
+            float thermo2_data_output;
+            max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data_2, &thermo1_data_output, 1);
+        case 3: 
+            uint8_t thermo_data_3[4];
+            float thermo3_data_output;
+            max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data_3, &thermo2_data_output, 1);
+        case 4: 
+            uint8_t thermo_data_4[4];
+            float thermo4_data_output;
+            max31855_readToBuffer(Thermo4_CSN_PIN, thermo_data_4, &thermo3_data_output, 1);
+        default: 
+            uint8_t thermo_data_1[4];
+            float thermo1_data_output;
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data_1, &thermo4_data_output, 1);
+            break;
+    }
+
+    
+    
 
     // protect writebuffer access 
     mutex_enter_blocking(&my_mutex);
@@ -103,7 +121,7 @@ void write_loop(uint64_t log_time) {
     else {
         printf("writing to write buffer...\n");
         // write to buffer
-        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
+        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output, thermo2_data_output, thermo3_data_output, thermo4_data_output);
     }
 
     puts("delaying until next log");
@@ -112,7 +130,7 @@ void write_loop(uint64_t log_time) {
     sleep_until(log_time);
 }
 
-int main() {
+int main(int argc, char **argv) {
     DELTA_T = 1000000 / HZ;
 
     // init pcf8520 clock
@@ -144,8 +162,25 @@ int main() {
     // launch core 1
     multicore_launch_core1(core1_entry);
 
-    // init max31855 thermocouple 1
-    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
+    // init max31855 thermocouples 
+    int numThermos = 1;
+    if (argc >= 1) 
+        numThermos = atoi(argv[1]);
+
+    //init only the amount specified by command line argument, number is set in the CMAKE file
+    //only two spi channels so each set of 2 needs to share one
+    switch (numThermos) {
+        case 2:
+            max31855_init(Thermo2_SCK_PIN, Thermo2_TX_PIN, Thermo2_RX_PIN, Thermo2_CSN_PIN, spi1);
+        case 3:
+            max31855_init(Thermo3_SCK_PIN, Thermo3_TX_PIN, Thermo3_RX_PIN, Thermo3_CSN_PIN, spi0);
+        case 4:
+            max31855_init(Thermo4_SCK_PIN, Thermo4_TX_PIN, Thermo4_RX_PIN, Thermo4_CSN_PIN, spi0);
+        default:
+            max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
+            break;
+    }
+
 
     // init data for thermocouples
 
@@ -172,11 +207,10 @@ int main() {
             // flash led for 1st half of second
             // send a log string to core 1 every DELTA_T microseconds  
             uint64_t log_time = time_us_64();
-            printf("log time before passed to function: %i\n");
             printf("current iteration is: %i\n", i);
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
-            write_loop(log_time);
+            write_loop(log_time, numThermos);
         }
     }
 }

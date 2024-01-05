@@ -1,5 +1,7 @@
 add_executable(runloop ./main.c)
 
+target_compile_options(runloop PRIVATE 1)
+
 target_link_libraries(runloop 
     pico_stdlib
     pico_cyw43_arch_none
