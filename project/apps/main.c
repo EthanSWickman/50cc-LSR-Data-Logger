@@ -74,43 +74,15 @@ void on_pwm_wrap() {
     signal_wrap_count++;
 }
 
-void write_loop(absolute_time_t log_time) {    
-    //calc rotations
-    uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
-
-    // temperature
-    uint8_t thermo_data[4];
-    float thermo1_data_output;
-    max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
-
-    // protect writebuffer access and get next buffer slot to write to 
-    mutex_enter_blocking(&my_mutex);
-    char* wb_in = writebuffer_in(&wb);
-    mutex_exit(&my_mutex);
-
-    // write to buffer
-    if (wb_in != NULL) {
-        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
-    }
-    else {
-        // full buffer error
-        printf("core 0: full buffer!\n");
-    }
-
-    // sleep until time to write next log
-    log_time = delayed_by_us(log_time, DELTA_T);
-    sleep_until(log_time);
-}
-
 int main() {
+    // init stdio
+    stdio_init_all();
 
     // init pcf8520 clock
     picowbell_pcf8520_init();
+
     // get current time
     t = picowbell_pcf8520_get_time();
-
-    // init stdio
-    stdio_init_all();
 
     // init cyw43 
     if (cyw43_arch_init()) {
@@ -159,7 +131,33 @@ int main() {
             absolute_time_t log_time = get_absolute_time();
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
-            write_loop(log_time);
+
+            //calc rotations
+            uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
+
+            // temperature
+            uint8_t thermo_data[4];
+            float thermo1_data_output;
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
+
+            // protect writebuffer access and get next buffer slot to write to 
+            mutex_enter_blocking(&my_mutex);
+            char* wb_in = writebuffer_in(&wb);
+            mutex_exit(&my_mutex);
+
+            // write to buffer
+            if (wb_in != NULL) {
+                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
+            }
+            else {
+                // full buffer error
+                printf("core 0: full buffer!\n");
+            }
+
+            // sleep until time to write next log
+            log_time = delayed_by_us(log_time, DELTA_T);
+            sleep_until(log_time);
+
         }
     }
 }
