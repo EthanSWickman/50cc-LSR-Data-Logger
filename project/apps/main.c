@@ -105,9 +105,6 @@ void write_loop(uint64_t log_time, int numThermos) {
             break;
     }
 
-    
-    
-
     // protect writebuffer access 
     mutex_enter_blocking(&my_mutex);
     char* wb_in = writebuffer_in(&wb);
@@ -181,9 +178,7 @@ int main(int argc, char **argv) {
             break;
     }
 
-
     // init data for thermocouples
-
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
