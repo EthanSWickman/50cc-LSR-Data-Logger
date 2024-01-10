@@ -74,7 +74,7 @@ void on_pwm_wrap() {
     signal_wrap_count++;
 }
 
-void write_loop(uint64_t log_time) {    
+void write_loop(absolute_time_t log_time) {    
     //calc rotations
     uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
@@ -156,7 +156,7 @@ int main() {
         for (uint i = 0; i < HZ; i++) {
             // flash led for 1st half of second
             // send a log string to core 1 every DELTA_T microseconds  
-            uint64_t log_time = time_us_64();
+            absolute_time_t log_time = get_absolute_time();
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
             write_loop(log_time);
