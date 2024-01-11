@@ -78,22 +78,16 @@ int main() {
     // init stdio
     stdio_init_all();
 
+    // init cyw43 
+    cyw43_arch_init();
+
     // init pcf8520 clock
     picowbell_pcf8520_init();
 
     // get current time
     t = picowbell_pcf8520_get_time();
 
-    // init cyw43 
-    if (cyw43_arch_init()) {
-        printf("wifi init failed\n");
-        return -1;
-    }
-
-    //setup HES
-    gpio_pull_up(VELOCITY_PWM_PIN);
-
-    //setup PWM counter
+    //setup velocity PWM counter
     pwm_slice = pwm_counter_setup(VELOCITY_PWM_PIN, on_pwm_wrap);
 
     gpio_init(LOG_START_BUTTON_PIN);
@@ -108,7 +102,6 @@ int main() {
     // init max31855 thermocouple 1
     max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
 
-
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
@@ -120,25 +113,28 @@ int main() {
 
     // start logs
     printf("starting logs...\n");
+
     // main logging loop
     while (true) {
         // wait until next second
         picowbell_pcf8520_wait_next_second(&t);
 
         for (uint i = 0; i < HZ; i++) {
+            // current time
+            absolute_time_t log_time = get_absolute_time();
+
             // flash led for 1st half of second
             // send a log string to core 1 every DELTA_T microseconds  
-            absolute_time_t log_time = get_absolute_time();
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
 
             //calc rotations
             uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
-            // temperature
+            // get temperature
             uint8_t thermo_data[4];
             float thermo1_data_output;
-            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 0);
 
             // protect writebuffer access and get next buffer slot to write to 
             mutex_enter_blocking(&my_mutex);
@@ -147,7 +143,7 @@ int main() {
 
             // write to buffer
             if (wb_in != NULL) {
-                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
+                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d r:%d, T1:%.2f ", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
             }
             else {
                 // full buffer error
@@ -157,7 +153,6 @@ int main() {
             // sleep until time to write next log
             log_time = delayed_by_us(log_time, DELTA_T);
             sleep_until(log_time);
-
         }
     }
 }
