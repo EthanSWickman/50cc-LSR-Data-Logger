@@ -23,12 +23,14 @@
 auto_init_mutex(my_mutex);
 
 const uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
-const uint64_t DELTA_T = 1000000 / HZ; // approximate microseconds between logs
+uint DELTA_T = 1000000 / HZ; // time in microseconds between logs
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 
 volatile uint signal_wrap_count = 0;
 volatile uint pwm_slice;
 
+struct writebuffer wb;
+datetime_t t;
 
 void core1_entry() {
     // init sd card
@@ -43,9 +45,9 @@ void core1_entry() {
     struct writebuffer* wb = (struct writebuffer*) multicore_fifo_pop_blocking();
 
     // forever write strings from core 0 to sd card
-    uint i = 0; 
+    uint i = 0;
     while (true) {
-        // protect writebuffer access
+        // protect writebuffer access and read from writebuffer
         mutex_enter_blocking(&my_mutex);
         char* wb_out = writebuffer_out(wb);
         mutex_exit(&my_mutex);
@@ -55,7 +57,7 @@ void core1_entry() {
             continue;
         }
 
-        // write logs
+        // write logs to sd card
         else {
             f_printf(&f, "%s\n", wb_out);
 
@@ -82,11 +84,10 @@ int main() {
     // init pcf8520 clock
     picowbell_pcf8520_init();
 
-    // init max31855 thermocouple 1
-    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
-    
-    // init hall effect sensor for wheel rotations
-    gpio_pull_up(VELOCITY_PWM_PIN);
+    // get current time
+    t = picowbell_pcf8520_get_time();
+
+    //setup velocity PWM counter
     pwm_slice = pwm_counter_setup(VELOCITY_PWM_PIN, on_pwm_wrap);
 
     gpio_init(LOG_START_BUTTON_PIN);
@@ -95,17 +96,23 @@ int main() {
         continue;
     }
 
+    // launch core 1
+    multicore_launch_core1(core1_entry);
+
+    // init max31855 thermocouple 1
+    max31855_init(Thermo1_SCK_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
+
+    // light up the logging indicator
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+
     // initialize writebuffer for cross-core communication
     struct writebuffer wb;
     wb.in = wb.out = 0;
     // push writebuffer address to core 1
     multicore_fifo_push_blocking((uintptr_t) &wb);
-    
-    // start logging
-    printf("starting logs...\n");
 
-    // get current time
-    datetime_t t = picowbell_pcf8520_get_time();
+    // start logs
+    printf("starting logs...\n");
 
     // main logging loop
     while (true) {
@@ -113,30 +120,33 @@ int main() {
         picowbell_pcf8520_wait_next_second(&t);
 
         for (uint i = 0; i < HZ; i++) {
+            // current time
+            absolute_time_t log_time = get_absolute_time();
+
             // flash led for 1st half of second
             // send a log string to core 1 every DELTA_T microseconds  
-            uint64_t log_time = time_us_64();
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
 
             //calc rotations
             uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
-            // calc temperature
+            // get temperature
             uint8_t thermo_data[4];
             float thermo1_data_output;
-            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 0);
 
-            // protect writebuffer access 
+            // protect writebuffer access and get next buffer slot to write to 
             mutex_enter_blocking(&my_mutex);
             char* wb_in = writebuffer_in(&wb);
             mutex_exit(&my_mutex);
 
-            // write string to inter-core buffer to buffer
+            // write to buffer
             if (wb_in != NULL) {
-                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
+                sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d r:%d, T1:%.2f ", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
             }
-            else { // buffer full error
+            else {
+                // full buffer error
                 printf("core 0: full buffer!\n");
             }
 

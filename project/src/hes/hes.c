@@ -1,6 +1,8 @@
 #include "hes.h"
+#include "pin_config.h"
 
 uint pwm_counter_setup(uint gpio, funcPtr wrapFunc) {
+    gpio_pull_up(VELOCITY_PWM_PIN);
     //DO NOT try to use an even GPIO (gpio 0, 2, 4 etc) pin, will not work
     //printf("pwm is on channel b: %b\n", pwm_gpio_to_channel(gpio) == PWM_CHAN_B);
     //convert the gpio number into a PWM slice
