@@ -86,9 +86,13 @@ void write_loop(uint64_t log_time) {
 
     uint8_t thermo_data[4];
     float thermo1_data_output;
+    float thermo2_data_output;
+    float thermo3_data_output;
 
     // max31855
     max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, 1);
+    max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, 1);
+    max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, 1);
 
     // protect writebuffer access 
     mutex_enter_blocking(&my_mutex);
@@ -101,12 +105,11 @@ void write_loop(uint64_t log_time) {
         return;
     }
     else {
-        printf("writing to write buffer...\n");
         // write to buffer
-        sprintf(wb_in, "%02d/%02d/%02d-%02d:%02d:%02d:%02d", t.month, t.day, t.year, t.hour, t.min, t.sec, rotations, thermo1_data_output);
+        // FIX FOR t3 LATER!!!!
+        sprintf(wb_in, "%02d:%02d:%02d,%d,%.2f,%.2f,%.2f ", t.hour, t.min, t.sec, rotations, thermo1_data_output, thermo2_data_output, thermo3_data_output);
     }
 
-    puts("delaying until next log");
     // sleep until time to write next log
     log_time = delayed_by_us(log_time, DELTA_T);
     sleep_until(log_time);
@@ -145,38 +148,37 @@ int main() {
     multicore_launch_core1(core1_entry);
 
     // init max31855 thermocouple 1
-    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
-
-    // init data for thermocouples
+    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo1_CSN_PIN, spi1);
+    // init max31855 thermocouple 2
+    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo2_CSN_PIN, spi1);
+    // init max31855 thermocouple 3
+    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo3_CSN_PIN, spi1);
 
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
     // initialize writebuffer for cross-core communication
     wb.in = wb.out = 0;
 
     // push writebuffer address to core 1
     multicore_fifo_push_blocking((uintptr_t) &wb);
 
-    alarm0_flag = false;
-
     // start logs
     printf("starting logs...\n");
     // main logging loop
     while (true) {
-        // wait until next second
+       
+         // wait until next second
         picowbell_pcf8520_wait_next_second(&t);
-
+        
         for (uint i = 0; i < HZ; i++) {
             // flash led for 1st half of second
             // send a log string to core 1 every DELTA_T microseconds  
             uint64_t log_time = time_us_64();
-            printf("log time before passed to function: %i\n");
-            printf("current iteration is: %i\n", i);
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
             write_loop(log_time);
         }
+        
     }
 }

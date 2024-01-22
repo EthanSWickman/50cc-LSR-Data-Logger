@@ -14,14 +14,12 @@
     function: initialize thermocouple instance, must be done before any readings
     params:
         SCK_PIN = thermocouple X's SCK (clock) pin #
-        TX_PIN = thermocouple X's TX (transmit) pin # (not actually used, just reserved?)
         RX_PIN = thermocouple X's RX (recieve) pin # 
         CSN_PIN = thermocouple X's CSN (chip select) pin #
         SPI = spi0 or spi1
 */
 void max31855_init(
     int SCK_PIN,
-    int TX_PIN,
     int RX_PIN,
     int CSN_PIN,
     spi_inst_t* SPI

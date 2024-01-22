@@ -53,11 +53,11 @@ UART1:
 //const uint PIN = 6;
 //const uint PIN = 7;
 //const uint PIN = 8;
-//const uint PIN = 9;
-#define Thermo1_SCK_PIN 10 // max31855, flexible (SPI)
-#define Thermo1_TX_PIN 11 // max31855, flexible (SPI), not actually used by max31855
-#define Thermo1_RX_PIN 12 // max31855, flexible (SPI), connected to max31855 DO pin
-#define Thermo1_CSN_PIN 13 // max31855, flexible (SPI)
+#define Thermo2_CSN_PIN 9 // max31855, flexible (SPI1)
+#define Thermo_SCK_PIN 10 // max31855, flexible (SPI1)
+#define Thermo3_CSN_PIN 11 // max31855, flexible (SPI1)
+#define Thermo_RX_PIN 12 // max31855, flexible (SPI1), connected to max31855 DO pin
+#define Thermo1_CSN_PIN 13 // max31855, flexible (SPI1)
 //const uint PIN = 14;
 //const uint PIN = 15;
 #define SD_MISO_PIN 16 // ADALOGGER IMPOSED

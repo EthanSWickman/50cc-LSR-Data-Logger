@@ -15,14 +15,13 @@
         CSN_PIN = thermocouple X's CSN (chip select) pin #
         SPI = spi0 or spi1
 */
-void max31855_init(int SCK_PIN, int TX_PIN, int RX_PIN, int CSN_PIN, spi_inst_t* SPI) {
+void max31855_init(int SCK_PIN, int RX_PIN, int CSN_PIN, spi_inst_t* SPI) {
     
     // set spi # and baudrate (5000k works)
     spi_init(SPI, 5000 * 1000);
     
     // setup pins for SPI
     gpio_set_function(RX_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(TX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(SCK_PIN, GPIO_FUNC_SPI);
 
     // setup chip select
