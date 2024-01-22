@@ -21,7 +21,6 @@
 */
 void max31855_init(
     int SCK_PIN,
-    int TX_PIN,
     int RX_PIN,
     int CSN_PIN,
     spi_inst_t* SPI

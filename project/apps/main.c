@@ -100,7 +100,7 @@ int main() {
     multicore_launch_core1(core1_entry);
 
     // init max31855 thermocouple 1
-    max31855_init(Thermo1_SCK_PIN, Thermo1_TX_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
+    max31855_init(Thermo1_SCK_PIN, Thermo1_RX_PIN, Thermo1_CSN_PIN, spi1);
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
