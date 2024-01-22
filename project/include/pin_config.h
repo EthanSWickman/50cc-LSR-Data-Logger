@@ -34,41 +34,41 @@ Pinout:
 Controller Reservations (please avoid conflicts until necessary): 
 
 SPI0: sd card
-SPI1: 
+SPI1: max31855
 
 I2C0: pcf8520 
-I2C1: 
+I2C1: lcd
 
 UART0:
 UART1:
 
 */
 
-#define LOG_START_BUTTON_PIN 0
-#define PWM_GPIO_PIN 1
-//const uint PIN = 2;
-//const uint PIN = 3;
+#define LOG_START_BUTTON_PIN 0 // bridged by button to start logs
+#define VELOCITY_PWM_PIN 1 // hall effect sensor on wheel
+#define RPM_PWM_PIN 2 // unimplemented, frequency counter measuring rpm of engine
+//#define PIN_3 = 3
 #define PCF8520_SDA_PIN 4 // ADALOGGER IMPOSED
 #define PCF8520_SCL_PIN 5 // ADALOGGER IMPOSED
-//const uint PIN = 6;
-//const uint PIN = 7;
-//const uint PIN = 8;
-#define Thermo2_CSN_PIN 9 // max31855, flexible (SPI1)
-#define Thermo_SCK_PIN 10 // max31855, flexible (SPI1)
-#define Thermo3_CSN_PIN 11 // max31855, flexible (SPI1)
-#define Thermo_RX_PIN 12 // max31855, flexible (SPI1), connected to max31855 DO pin
-#define Thermo1_CSN_PIN 13 // max31855, flexible (SPI1)
-//const uint PIN = 14;
-//const uint PIN = 15;
+#define LCD_SDA_PIN 6 // unimplemented, lcd sda pin
+#define LCD_SCL_PIN 7 // unimplemented, lcd scl pin
+//#define PIN_8 = 8
+//#define PIN_9 = 9
+#define Thermo_SCK_PIN 10 // max31855, flexible (SPI)
+#define Thermo1_CSN_PIN 11 // chip select for first thermocouple
+#define Thermo_RX_PIN 12 // max31855, flexible (SPI), connected to max31855 DO pin
+#define Thermo2_CSN_PIN 13 // chip select for first thermocouple
+#define Thermo3_CSN_PIN 14 // chip select for first thermocouple
+#define Thermo4_CSN_PIN 15 // chip select for first thermocouple
 #define SD_MISO_PIN 16 // ADALOGGER IMPOSED
 #define SD_CS_PIN 17 // ADALOGGER IMPOSED
 #define SD_SCK_PIN 18 // ADALOGGER IMPOSED
 #define SD_MOSI_PIN 19 // ADALOGGER IMPOSED
-//const uint PIN = 20;
-//const uint PIN = 21;
-//const uint PIN = 22;
-//const uint PIN = 26;
-//const uint PIN = 27;
-//const uint PIN = 28;
+//#define PIN_20 = 20
+//#define PIN_21 = 21
+//#define PIN_22 = 22
+#define AIR_FUEL_RATIO_PIN 26 // unimplemented, 0-3.3V sensing attached to voltage divider attached to 0-5V AFR sensor
+//#define PIN_24 = 27
+//#define PIN_25 = 28
 
 #endif
