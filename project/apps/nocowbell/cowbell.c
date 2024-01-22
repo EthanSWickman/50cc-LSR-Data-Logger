@@ -209,10 +209,10 @@ int main() {
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     //setup HES
-    gpio_pull_up(PWM_GPIO_PIN);
+    gpio_pull_up(VELOCITY_PWM_PIN);
 
     //setup PWM counter
-    pwm_slice = pwm_counter_setup(PWM_GPIO_PIN, on_pwm_wrap);
+    pwm_slice = pwm_counter_setup(VELOCITY_PWM_PIN, on_pwm_wrap);
 
     // launch core 1
     multicore_launch_core1(core1_entry);
