@@ -44,7 +44,7 @@ UART1:
 
 */
 
-#define LOG_START_BUTTON_PIN 0 // bridged by button to start logs
+//#define PIN_0 = 0
 #define VELOCITY_PWM_PIN 1 // hall effect sensor on wheel
 #define RPM_PWM_PIN 2 // unimplemented, frequency counter measuring rpm of engine
 //#define PIN_3 = 3
@@ -69,6 +69,6 @@ UART1:
 //#define PIN_22 = 22
 #define AIR_FUEL_RATIO_PIN 26 // unimplemented, 0-3.3V sensing attached to voltage divider attached to 0-5V AFR sensor
 //#define PIN_24 = 27
-//#define PIN_25 = 28
+#define LOG_START_BUTTON_PIN 28 // bridged by button to start logs
 
 #endif
