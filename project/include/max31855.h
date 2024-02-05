@@ -40,7 +40,7 @@ void max31855_init(
 void max31855_getTemp(
     uint8_t data[],
     float* buff,
-    int verbose
+    int tVerbosity
 );
 
 /*
@@ -59,7 +59,7 @@ void max31855_readToBuffer(
     int CSN_PIN,
     uint8_t data[],
     float* buff,
-    int verbose
+    int tVerbosity
 );
 
 #endif

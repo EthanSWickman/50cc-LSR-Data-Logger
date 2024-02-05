@@ -24,12 +24,14 @@ uint pwm_counter_setup(uint gpio, funcPtr wrapFunc) {
     return slice_num; 
 }
 
-uint calc_rotations(volatile uint pwm_slice, volatile uint* wrap_count_ptr) {
+uint calc_rotations(volatile uint pwm_slice, volatile uint* wrap_count_ptr, int HESVerbosity) {
     //calculate current rotations to add to the write buffer
     uint counter = pwm_get_counter(pwm_slice);
     //printf("current pwm counter value %i for slice number %i\n", counter, pwm_slice);
     uint rotations = (*wrap_count_ptr * PWM_COUNTER_MAX) + counter;
-    //printf("total rotations: %i\n", rotations);
+    if(HESVerbosity){
+        printf("RPM: %i\n", (rotations*4*60));
+    }
     *wrap_count_ptr = 0; //reset count for next time interval
     pwm_set_counter(pwm_slice, 0); 
     return rotations;

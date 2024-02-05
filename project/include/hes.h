@@ -29,5 +29,5 @@ max detectable rpms. it would have to get to above 65k rpms to matter,
 so we are probablly fine with or without the wrap checking. including just 
 to be safe, will remove if multiply is negatively impacting performance.
 */
-uint calc_rotations(volatile uint pwm_slice, volatile uint* wrap_count_ptr);
+uint calc_rotations(volatile uint pwm_slice, volatile uint* wrap_count_ptr, int HESVerbosity);
 #endif

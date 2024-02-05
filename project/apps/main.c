@@ -22,7 +22,7 @@
 
 auto_init_mutex(my_mutex);
 
-const uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
+const uint HZ = 4; // logs per second (keep under 50 until we solve high frequency problems!)
 uint DELTA_T = 1000000 / HZ; // time in microseconds between logs
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 
@@ -32,7 +32,8 @@ volatile uint pwm_slice;
 struct writebuffer wb;
 datetime_t t;
 
-int verbosity = 0;  // just for thermos atp
+int tVerbosity = 1;
+int HESVerbosity = 1;
 
 void core1_entry() {
     // init sd card
@@ -133,16 +134,16 @@ int main() {
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
 
             //calc rotations
-            uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
+            uint rotations = calc_rotations(pwm_slice, &signal_wrap_count, HESVerbosity);
 
             // get temperature
             uint8_t thermo_data[4];
             float thermo1_data_output;
             float thermo2_data_output;
             float thermo3_data_output;
-            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, verbosity);
-            max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, verbosity);
-            max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, verbosity);
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, tVerbosity);
+            max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, tVerbosity);
+            max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, tVerbosity);
 
             // protect writebuffer access and get next buffer slot to write to 
             mutex_enter_blocking(&my_mutex);
