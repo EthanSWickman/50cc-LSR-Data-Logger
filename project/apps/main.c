@@ -22,7 +22,7 @@
 
 auto_init_mutex(my_mutex);
 
-const uint HZ = 4; // logs per second (keep under 50 until we solve high frequency problems!)
+const uint HZ = 30; // logs per second (keep under 50 until we solve high frequency problems!)
 uint DELTA_T = 1000000 / HZ; // time in microseconds between logs
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 
