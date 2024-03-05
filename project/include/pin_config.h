@@ -68,7 +68,7 @@ UART1:
 //#define PIN_21 = 21
 //#define PIN_22 = 22
 #define AIR_FUEL_RATIO_PIN 26 // unimplemented, 0-3.3V sensing attached to voltage divider attached to 0-5V AFR sensor
-//#define PIN_24 = 27
+#define BUTTON_PIN = 27 // unimplemented, analog input to allow for several buttons on one pin
 //#define PIN_25 = 28
 
 #endif

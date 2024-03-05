@@ -4,7 +4,7 @@
 #include "pico/stdlib.h"
 
 /*
-    funtions for interacting with max31855 thermocouple
+    functions for interacting with max31855 thermocouple
     datasheet available at https://www.analog.com/media/en/technical-documentation/data-sheets/max31855.pdf
 */
 

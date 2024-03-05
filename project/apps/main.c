@@ -18,11 +18,12 @@
 #include "writebuffer.h"
 #include "hes.h"
 #include "max31855.h"
+#include "lcd.h"
 #include "pin_config.h"
 
 auto_init_mutex(my_mutex);
 
-const uint HZ = 50; // logs per second (keep under 50 until we solve high frequency problems!)
+const uint HZ = 10; // logs per second (keep under 50 until we solve high frequency problems!)
 uint DELTA_T = 1000000 / HZ; // time in microseconds between logs
 const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 
@@ -32,7 +33,7 @@ volatile uint pwm_slice;
 struct writebuffer wb;
 datetime_t t;
 
-int verbosity = 0;  // just for thermos atp
+bool verbose = 0;  // just for thermos atm
 
 void core1_entry() {
     // init sd card
@@ -92,6 +93,11 @@ int main() {
     //setup velocity PWM counter
     pwm_slice = pwm_counter_setup(VELOCITY_PWM_PIN, on_pwm_wrap);
 
+    // init max31855 thermocouples
+    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo1_CSN_PIN, spi1);
+    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo2_CSN_PIN, spi1);
+    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo3_CSN_PIN, spi1);
+
     gpio_init(LOG_START_BUTTON_PIN);
     gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
     while (gpio_get(LOG_START_BUTTON_PIN) != 1) {
@@ -101,11 +107,6 @@ int main() {
     // launch core 1
     multicore_launch_core1(core1_entry);
 
-    // init max31855 thermocouples
-    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo1_CSN_PIN, spi1);
-    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo2_CSN_PIN, spi1);
-    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo3_CSN_PIN, spi1);
-
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
     // initialize writebuffer for cross-core communication
@@ -113,9 +114,6 @@ int main() {
     wb.in = wb.out = 0;
     // push writebuffer address to core 1
     multicore_fifo_push_blocking((uintptr_t) &wb);
-
-    // start logs
-    printf("starting logs...\n");
 
     // main logging loop
     while (true) {
@@ -140,9 +138,9 @@ int main() {
             float thermo1_data_output;
             float thermo2_data_output;
             float thermo3_data_output;
-            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, verbosity);
-            max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, verbosity);
-            max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, verbosity);
+            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, verbose);
+            max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, verbose);
+            max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, verbose);
 
             // protect writebuffer access and get next buffer slot to write to 
             mutex_enter_blocking(&my_mutex);
@@ -156,6 +154,15 @@ int main() {
             else {
                 // full buffer error
                 printf("core 0: full buffer!\n");
+            }
+
+            // write to lcd
+            if (i == (HZ / 2)) {
+                // write to lcd
+                char buffer[33];
+                int n = sprintf(buffer, "%.0f %.0f %.0f", thermo1_data_output, thermo2_data_output, thermo3_data_output);
+                sprintf(&buffer[n], " | %d", rotations);
+                lcd_write(buffer);
             }
 
             // sleep until time to write next log

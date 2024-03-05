@@ -12,6 +12,7 @@ target_link_libraries(runloop
     hes
     max31855
     hardware_spi
+    lcd
 )
 
 pico_enable_stdio_usb(runloop 1)
