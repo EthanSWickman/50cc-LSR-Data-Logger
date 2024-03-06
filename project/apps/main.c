@@ -19,6 +19,7 @@
 #include "hes.h"
 #include "max31855.h"
 #include "lcd.h"
+#include "controls.h"
 #include "pin_config.h"
 
 auto_init_mutex(my_mutex);
@@ -97,6 +98,12 @@ int main() {
     max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo1_CSN_PIN, spi1);
     max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo2_CSN_PIN, spi1);
     max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo3_CSN_PIN, spi1);
+
+    lcd_init();
+
+    controls_init();
+
+    controls_startup();
 
     gpio_init(LOG_START_BUTTON_PIN);
     gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
