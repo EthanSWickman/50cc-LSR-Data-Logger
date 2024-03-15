@@ -101,9 +101,9 @@ int main() {
 
     lcd_init();
 
-    controls_init();
+    //controls_init();
 
-    controls_startup();
+    //controls_startup();
 
     gpio_init(LOG_START_BUTTON_PIN);
     gpio_set_dir(LOG_START_BUTTON_PIN, GPIO_IN);
