@@ -24,9 +24,9 @@
 
 auto_init_mutex(my_mutex);
 
-const uint HZ = 10; // logs per second (keep under 50 until we solve high frequency problems!)
+const uint HZ = 4; // logs per second (keep under 50 until we solve high frequency problems!)
 uint DELTA_T = 1000000 / HZ; // time in microseconds between logs
-const uint SAVE_INTERVAL = 256; // should be 2^n for some integer n, represents how many logs until we save results to sd card
+const uint SAVE_INTERVAL = 16; // should be 2^n for some integer n, represents how many logs until we save results to sd card
 
 volatile uint signal_wrap_count = 0;
 volatile uint pwm_slice;
@@ -88,18 +88,13 @@ int main() {
     // init pcf8520 clock
     picowbell_pcf8520_init();
 
-    // get current time
-    t = picowbell_pcf8520_get_time();
-
     //setup velocity PWM counter
     pwm_slice = pwm_counter_setup(VELOCITY_PWM_PIN, on_pwm_wrap);
 
     // init max31855 thermocouples
-    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo1_CSN_PIN, spi1);
-    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo2_CSN_PIN, spi1);
-    max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo3_CSN_PIN, spi1);
-
-    lcd_init();
+    // max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo1_CSN_PIN, spi1);
+    // max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo2_CSN_PIN, spi1);
+    // max31855_init(Thermo_SCK_PIN, Thermo_RX_PIN, Thermo3_CSN_PIN, spi1);
 
     //controls_init();
 
@@ -110,24 +105,31 @@ int main() {
     while (gpio_get(LOG_START_BUTTON_PIN) != 1) {
         continue;
     }
+    printf("starting logs\n");
+
+    // lcd_init();
 
     // launch core 1
     multicore_launch_core1(core1_entry);
 
     // light up the logging indicator
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+
     // initialize writebuffer for cross-core communication
     struct writebuffer wb;
     wb.in = wb.out = 0;
+
     // push writebuffer address to core 1
     multicore_fifo_push_blocking((uintptr_t) &wb);
 
+    // get current time
+    t = picowbell_pcf8520_get_time();
+
     // main logging loop
     while (true) {
-       
-         // wait until next second
+        // wait until next second
         picowbell_pcf8520_wait_next_second(&t);
-        
+                
         for (uint i = 0; i < HZ; i++) {
             // current time
             absolute_time_t log_time = get_absolute_time();
@@ -137,17 +139,17 @@ int main() {
             if (i + 1 > (HZ / 2)) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             else {cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);}
 
-            //calc rotations
+            // calc rotations
             uint rotations = calc_rotations(pwm_slice, &signal_wrap_count);
 
             // get temperature
-            uint8_t thermo_data[4];
-            float thermo1_data_output;
-            float thermo2_data_output;
-            float thermo3_data_output;
-            max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, verbose);
-            max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, verbose);
-            max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, verbose);
+            //uint8_t thermo_data[4];
+            //float thermo1_data_output;
+            //float thermo2_data_output;
+            //float thermo3_data_output;
+            //max31855_readToBuffer(Thermo1_CSN_PIN, thermo_data, &thermo1_data_output, verbose);
+            //max31855_readToBuffer(Thermo2_CSN_PIN, thermo_data, &thermo2_data_output, verbose);
+            //max31855_readToBuffer(Thermo3_CSN_PIN, thermo_data, &thermo3_data_output, verbose);
 
             // protect writebuffer access and get next buffer slot to write to 
             mutex_enter_blocking(&my_mutex);
@@ -156,26 +158,29 @@ int main() {
 
             // write to buffer
             if (wb_in != NULL) {
-                sprintf(wb_in, "%02d:%02d:%02d,%d,%.2f,%.2f,%.2f ", t.hour, t.min, t.sec, rotations, thermo1_data_output, thermo2_data_output, thermo3_data_output);
+                sprintf(wb_in, "%02d:%02d:%02d,%d ", t.hour, t.min, t.sec, rotations); //, thermo1_data_output, thermo2_data_output, thermo3_data_output);
+            printf("%02d:%02d:%02d,%d\n", t.hour, t.min, t.sec, rotations);
             }
-            else {
-                // full buffer error
-                printf("core 0: full buffer!\n");
-            }
+            //else {
+                //// full buffer error
+                //printf("core 0: full buffer!\n");
+            //}
 
             // write to lcd
-            if (i == (HZ / 2)) {
+            // if (i == (HZ / 2)) {
                 // write to lcd
-                char buffer[33];
-                int n = sprintf(buffer, "%.0f %.0f %.0f", thermo1_data_output, thermo2_data_output, thermo3_data_output);
-                sprintf(&buffer[n], " | %d", rotations);
-                lcd_write(buffer);
-            }
+            //char buffer[33];
+                //// int n = sprintf(buffer, "%.0f %.0f %.0f"); // , thermo1_data_output, thermo2_data_output, thermo3_data_output);
+            //int n = sprintf(buffer, "%d", rotations);
+            //for (int i = 0; i < 32 - n; i++) {
+                //sprintf(&buffer[i], " ");
+            //}
+            //lcd_write(buffer);
+            // }
 
             // sleep until time to write next log
             log_time = delayed_by_us(log_time, DELTA_T);
             sleep_until(log_time);
         }
-        
     }
 }
