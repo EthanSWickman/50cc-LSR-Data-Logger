@@ -2,6 +2,10 @@
 
 This repository is the home of data logger development for the 50cc Land Speed Record Motorcycle Racing Team at Oregon State University .
 
+## Compile Instructions (requires Pico SDK) 
+- Navigate to /project/build
+- Run _cmake ./../_
+
 ## Project Structure 
 - /project/ - code base (C and CMake) - loosely follows https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html
     - /project/apps - files to be compiled into executables
